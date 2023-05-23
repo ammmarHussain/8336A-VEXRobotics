@@ -85,10 +85,10 @@ void opcontrol() {
 		int leftInputY = master.get_analog(ANALOG_LEFT_Y);
 
 		// detect if leftInputY is forward
-		if (leftInputY > 120) {
-			timeElapsed = timeElapsed + 0.001;
-		} else if (timeElapsed > 0) {
-			timeElapsed = timeElapsed - 0.001;
+		if (leftInputY > 10) {
+			timeElapsed = timeElapsed + 0.01;
+		} else if (timeElapsed > 0 && leftInputY < 5) {
+			timeElapsed = timeElapsed - 0.01;
 		} else {
 			timeElapsed = 0;
 		}
@@ -100,7 +100,7 @@ void opcontrol() {
 		int left = acceleration + rightInputX;
 		int right = acceleration - rightInputX;
 		leftDriveSmart.move(left);
-		rightDriveSmart.move(right);
+		rightDriveSmart.move(-right);
 
 		// prevent system from overworking
 		pros::delay(2);
