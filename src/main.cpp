@@ -76,19 +76,17 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 	// parse input from controller - arcade driving method
-	double acceleration;
-	double timeElapsed;
+	float acceleration;
+	float timeElapsed = 0;
 	while (true) {
 
 		// grab input from controller
-		int rightInputX = master.get_analog(ANALOG_RIGHT_X);
-		int leftInputY = master.get_analog(ANALOG_LEFT_Y);
+		float rightInputX = master.get_analog(ANALOG_RIGHT_X);
+		float leftInputY = master.get_analog(ANALOG_LEFT_Y);
 
 		// detect if leftInputY is forward
-		if (leftInputY > 10) {
-			timeElapsed = timeElapsed + 0.01;
-		} else if (timeElapsed > 0 && leftInputY < 5) {
-			timeElapsed = timeElapsed - 0.01;
+		if (leftInputY > 100) {
+			timeElapsed = timeElapsed + 0.48;
 		} else {
 			timeElapsed = 0;
 		}
@@ -97,10 +95,10 @@ void opcontrol() {
 		acceleration = -pow((timeElapsed-5),2)+25;
 
 		// control wheels
-		int left = acceleration + rightInputX;
-		int right = acceleration - rightInputX;
-		leftDriveSmart.move(left);
-		rightDriveSmart.move(-right);
+		float left = acceleration + rightInputX;
+		float right = acceleration - rightInputX;
+		leftDriveSmart.move_voltage(left);
+		rightDriveSmart.move_voltage(-right);
 
 		// prevent system from overworking
 		pros::delay(2);
