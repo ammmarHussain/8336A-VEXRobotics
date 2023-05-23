@@ -76,8 +76,8 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 	// parse input from controller - arcade driving method
-	double acceleration;
-	double timeElapsed;
+	double acceleration = 0;
+	double timeElapsed = 0;
 	while (true) {
 
 		// grab input from controller
@@ -89,8 +89,6 @@ void opcontrol() {
 			timeElapsed = timeElapsed + 0.01;
 		} else if (timeElapsed > 0 && leftInputY < 5) {
 			timeElapsed = timeElapsed - 0.01;
-		} else {
-			timeElapsed = 0;
 		}
 
 		// adjust acceleration
