@@ -1,11 +1,5 @@
 #include "main.h"
-
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
+#include "PIDController.h"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -69,44 +63,46 @@ void autonomous() {}
 void opcontrol() {
 
 	// left side motor group
-	pros::Motor leftMotorBack(1);
-	pros::Motor leftMotorFront(9);
+	pros::Motor leftMotorBack(3);
+	pros::Motor leftMotorFront(8);
 	pros::Motor_Group leftDriveSmart({leftMotorBack,leftMotorFront});
 	
 	// right side motor group
-	pros::Motor rightMotorBack(2);
-	pros::Motor rightMotorFront(10);
+	pros::Motor rightMotorBack(4);
+	pros::Motor rightMotorFront(7);
 	pros::Motor_Group rightDriveSmart({rightMotorFront, rightMotorBack});
 
 	// controller initialization 
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 	// parse input from controller - arcade driving method
+	double acceleration;
+	double timeElapsed;
 	while (true) {
-		int power = master.get_analog(ANALOG_LEFT_Y);
-		int turn = master.get_analog(ANALOG_RIGHT_X);
-		int left = power + turn;
-		int right = power - turn;
+
+		// grab input from controller
+		int rightInputX = master.get_analog(ANALOG_RIGHT_X);
+		int leftInputY = master.get_analog(ANALOG_LEFT_Y);
+
+		// detect if leftInputY is forward
+		if (leftInputY > 120) {
+			timeElapsed = timeElapsed + 0.001;
+		} else if (timeElapsed > 0) {
+			timeElapsed = timeElapsed - 0.001;
+		} else {
+			timeElapsed = 0;
+		}
+
+		// adjust acceleration
+		acceleration = -pow((timeElapsed-5),2)+25;
+
+		// control wheels
+		int left = acceleration + rightInputX;
+		int right = acceleration - rightInputX;
 		leftDriveSmart.move(left);
 		rightDriveSmart.move(right);
+
+		// prevent system from overworking
 		pros::delay(2);
 	}
 }
-
-	/*
-	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
-
-		left_mtr = left;
-		right_mtr = right;
-
-		pros::delay(20);
-
-		
-	}
-}
-*/
