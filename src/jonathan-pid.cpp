@@ -10,7 +10,7 @@
 // rightMotorA          motor         16              
 // rightMotorB          motor         17              
 // ---- END VEXCODE CONFIGURED DEVICES ----
-#include "PIDController.h"
+#include "pid-controller.h"
 
 // include namespace vex
 using namespace vex;
