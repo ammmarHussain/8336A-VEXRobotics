@@ -23,46 +23,88 @@
 
 using namespace vex;
 
-double turningCurve = 10;
-bool turningRed = false;
 
+/*---------------------------------------------------------------------------*/
+/*                               Externing Motors                            */
+/*---------------------------------------------------------------------------*/
+
+// announces motors and devices from robot-config.cpp as variables for functions to reference 
+// this 'globalizes' them and allows these variables to be used anywhere in this program
+// whereas beforehand these motors could only be referenced in robot-config.cpp
+
+
+extern motor leftBackMotor;
+extern motor leftFrontMotor;
+extern motor rightBackMotor;
+extern motor rightFrontMotor;
+extern motor flexWheel;
+extern motor_group LeftDriveSmart;
+extern motor_group RightDriveSmart;
+extern drivetrain Drivetrain;
+extern brain Brain;
+
+
+
+
+/*---------------------------------------------------------------------------*/
+/*                               Joystick Curve                              */
+/*---------------------------------------------------------------------------*/
+
+// This adjusts the sensitivity of the controller's left and right joysticks.
+// It maintains the maximum speed of the motors, only affecting the middle-range.
+// This allows for more precision when driving at lower speeds.
+
+
+double turningCurve = 10; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
 double forwardCurve = 10;
+
+bool turningRed = false; // Allows the choosing between two curves - A red curve and a blue curve - described below.
 bool forwardRed = false;
 
-
-//graph of red and blue lines from 5225A here
-//https://www.desmos.com/calculator/sdcgzah5ya
-int curveJoystick(bool red, int input, double t){
+// https://www.desmos.com/calculator/sdcgzah5ya - visualizes the equations used below.
+int curveJoystick(bool red, int input, double t){ 
   int val = 0;
-  if(red){
-    val = (std::exp(t/10)+std::exp((std::abs(input)-100)/10)*(1-std::exp(-t/10))) * input;
+  if(red){ // Red curve - Less sensitive in the range 20-70, but more sensitive when controller input is > 80.
+    val = (std::exp(t/10)+std::exp((std::abs(input)-100)/10)*(1-std::exp(-t/10))) * input; 
   }
-  else {
-    //blue
+  else { // Allows
+    // Blue Curve - More sensitive in the mid ranges 20-80, but a more gradual incline as controller input reaches max.
     val = std::exp(((std::abs(input)-100)*20)/1000) * input;
   }
   return val;
 }
 
-// announces motors from robot-config.cpp as variables for functions to reference
-extern motor leftBackMotor;
-extern motor leftFrontMotor;
-extern motor rightBackMotor;
-extern motor rightFrontMotor;
-extern motor_group LeftDriveSmart;
-extern motor_group RightDriveSmart;
-extern drivetrain Drivetrain;
+
+
+
+/*---------------------------------------------------------------------------*/
+/*                  Converting Motor Encoder Ticks to Inches                 */
+/*---------------------------------------------------------------------------*/
 
 // converting degrees to distance
-int DisToTheta (int dis){
+int distanceToTheta (int dis){
   int theta;
-  int gearRatio = 60/36;
+  int gearRatio = 60/36; // input gear / output gear
   double wheelDiameter = 4.07;
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
   return theta;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
+/*                 Proportional - Integral - Derivative Function             */
+/*---------------------------------------------------------------------------*/
+
+// A Proportional Integral Derivative Function - PID for short - uses values about the positions of the motors in a drivetrain.
+// A PID that is fine tuned for a specific build of robot is highly useful as it allows for precise movements that autocorrect if need be.
+// PIDs are broken up into 3 math terms that are explained further below.
+
+
+//////////////////////////
+// Prerequisites /////////
+//////////////////////////
 
 
 // Constants for the PID controller
@@ -73,7 +115,7 @@ const double kD = 0.0;  // Derivative gain
 const double turnkP = 0.0;
 const double turnkD = 0.0;
 
-const double targetDistance = DisToTheta(5);  // Desired distance to travel
+const double targetDistance = distanceToTheta(0);  // Desired distance to travel
 const double targetTurnValue = 0;
 
 // Variables for the PID controller
@@ -85,11 +127,10 @@ bool resetMotorValues = false;
 bool enablePIDFunction = true;
 
 
-// Function to calculate the PID output
-
+// Function to calculate the PID output.
 double calculatePIDOutput() {
 
-  // Reset motor values to 0 once program is initialized and PID loop is enabled
+  // Reset motor values to 0 once program is initialized and PID loop is enabled.
   while(enablePIDFunction) {
     if (resetMotorValues) { 
       resetMotorValues = false;
@@ -110,7 +151,7 @@ double calculatePIDOutput() {
     double averagePosition = (leftBackMotorPosition + leftFrontMotorPosition + rightBackMotorPosition + rightFrontMotorPosition)/ 4; 
 
 
-  // Calculate the Potential
+  // Calculate the Proportional.
   error = targetDistance - averagePosition;
 
   // Calculate the Derivative
@@ -158,9 +199,60 @@ double calculatePIDOutput() {
 
 
   }
-return 1;
+ return 1;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
+/*                     Creating threads for Multithreading                   */
+/*---------------------------------------------------------------------------*/
+
+// Threads are functions that allow the program and hardware to "split" its resources running.
+// Essentially, while typical loops do not allow for other loops to take place until it is done,
+// threads will allow you to run multiple functions in a loop simoultaenously.
+// This is known as multithreading. 
+
+
+int joystickThreadCallback() {
+  // Performs a callback to the curveJoystick function, taking Axis 1 and Axis 3 of the controller as values among the other variables.
+  double turnVal = curveJoystick(turningRed, Controller1.Axis1.position(percent), turningCurve); // Get curvature according to settings [-100,100]
+  double forwardVal = curveJoystick(forwardRed, Controller1.Axis3.position(percent), forwardCurve); // Get curvature according to settings [-100,100]
+
+  // Converts the values obtained from the above callbacks to voltages by multiplying by 0.12. (Why? The max voltage on motors is 12 volts.)
+  double turnVolts = turnVal * 0.12; 
+  double forwardVolts = forwardVal * 0.12; 
+  
+  // Applies the voltages to the motors.
+  LeftDriveSmart.spin(forward, forwardVolts + turnVolts, voltageUnits::volt); 
+  RightDriveSmart.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
+
+  // Gets the RPM of the left rear motor and stores it in a variable. 
+  int leftBVelocity = leftBackMotor.velocity(rpm);
+  // Prints the velocity using the variable to the terminal.
+  std::cout << leftBVelocity << std::endl;
+
+  // Forces the thread for 10 milliseconds to sleep to prevent it from using all of the CPU's resources.
+  this_thread::sleep_for(10);
+
+  // A threads's callback must return an int, even though the code will never
+  // get here. You must return an int here. Threads can exit, but this one does not.
+  return 0;
+}
+
+int flexThreadCallback () {
+ // 
+  if (Controller1.ButtonA.pressing()) {
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Button A is being pressed"); 
+  }
+  else {
+    Brain.Screen.clearScreen();
+  }
+
+  this_thread::sleep_for(10);
+  return 0;
+}
 
 
 
@@ -168,29 +260,19 @@ int main() {
   // Initialize the VEX V5 components
   vexcodeInit();
 
-  Drivetrain.setStopping(hold);
-  LeftDriveSmart.setStopping(hold);
-  RightDriveSmart.setStopping(hold);
+  Drivetrain.setStopping(brake);
+  LeftDriveSmart.setStopping(brake);
+  RightDriveSmart.setStopping(brake);
 
   enablePIDFunction = false;
   resetMotorValues = true;
 
   // vex::task calculatePIDOutput;
 
-  
+  // Sets up the multithreading in a while loop that runs forever.
   while(1){
-    double turnVal = curveJoystick(turningRed, Controller1.Axis1.position(percent), turningCurve); // Get curvature according to settings [-100,100]
-    double forwardVal = curveJoystick(forwardRed, Controller1.Axis3.position(percent), forwardCurve); // Get curvature according to settings [-100,100]
-
-    double turnVolts = turnVal * 0.12; //Converts to voltage
-    double forwardVolts = forwardVal * 0.12; //Converts to voltage
-
-    LeftDriveSmart.spin(forward, forwardVolts + turnVolts, voltageUnits::volt); //Apply Via Voltage
-    RightDriveSmart.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-
-    int leftBVelocity = leftBackMotor.velocity(rpm);
-    std::cout << leftBVelocity << std::endl;
-
+    thread joystickCurve = thread(joystickThreadCallback);
+    thread flexWheelMotorControl = thread(flexThreadCallback);
     vex::task::sleep(20);
   }
 
