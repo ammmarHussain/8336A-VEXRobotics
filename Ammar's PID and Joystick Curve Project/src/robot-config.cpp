@@ -14,6 +14,7 @@ motor leftFrontMotor = motor(PORT11, ratio18_1, true); // front left motor
 motor rightBackMotor = motor(PORT17, ratio18_1, false); // rear right motor
 motor rightFrontMotor = motor(PORT16, ratio18_1, false); // front right motor
 motor flexWheel = motor(PORT4, ratio18_1, true); // flex wheel
+motor secondFlexWheel = motor(PORT5, ratio18_1, false); // secondary flex wheel
 motor_group LeftDriveSmart = motor_group(leftBackMotor,leftFrontMotor);
 motor_group RightDriveSmart = motor_group(rightBackMotor, rightFrontMotor);
 drivetrain Drivetrain = drivetrain(LeftDriveSmart, RightDriveSmart, 320, 279.4, 279.4, mm, 1.67);
@@ -89,6 +90,5 @@ return 0;
 */
 
 void vexcodeInit( void ) {
-  task rc_auto_loop_function_Controller1(rc_auto_loop_function_Controller1);
   // nothing to initialize
 }

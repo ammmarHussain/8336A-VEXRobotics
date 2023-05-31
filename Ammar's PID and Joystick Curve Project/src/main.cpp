@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\lilyn                                            */
+/*    Author:       Ammar Hussain                                             */
 /*    Created:      Mon May 22 2023                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
@@ -20,8 +20,10 @@
 #include "vex.h"
 #include <cmath>
 #include <iostream>
+ 
 
 using namespace vex;
+competition Competition;
 
 
 /*---------------------------------------------------------------------------*/
@@ -85,7 +87,7 @@ int curveJoystick(bool red, int input, double t){
 int distanceToTheta (int dis){
   int theta;
   int gearRatio = 60/36; // input gear / output gear
-  double wheelDiameter = 4.07;
+  double wheelDiameter = 4.125; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
   return theta;
@@ -108,15 +110,15 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.0;  // Proportional gain
-// const double kI = 0.0;  // Integral gain - Not used for Drivetrain
+const double kP = 0.1;  // Proportional gain
+// const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
 const double kD = 0.0;  // Derivative gain
 
 const double turnkP = 0.0;
 const double turnkD = 0.0;
 
-const double targetDistance = distanceToTheta(0);  // Desired distance to travel
-const double targetTurnValue = 0;
+int targetDistance;  // Desired distance to travel
+int targetTurnValue = 0;
 
 // Variables for the PID controller
 double error, integral, derivative, lastError;
@@ -128,7 +130,7 @@ bool enablePIDFunction = true;
 
 
 // Function to calculate the PID output.
-double calculatePIDOutput() {
+int calculatePIDOutput() {
 
   // Reset motor values to 0 once program is initialized and PID loop is enabled.
   while(enablePIDFunction) {
@@ -175,24 +177,22 @@ double calculatePIDOutput() {
   // Calculate the turning Derivative
   turnDerivative = turnError - turnLastError;
 
-  
-  // Calculates motor power for turns
-  double turnMotorPower = (turnkP * turnError) + (turnkD * turnDerivative);
-
-  // Calculate motor power for lateral movement
-  double lateralMotorPower = (kP * error) + (kD * derivative);
-
-
 
   ////////////////////////////////
   // Setting Motor Power ////////
   ///////////////////////////////
+
+  // Calculates motor power for turns
+  double turnMotorPower = (turnkP * turnError) + (turnkD * turnDerivative);
+  // Calculate motor power for lateral movement
+  double lateralMotorPower = (kP * error) + (kD * derivative);
   
   LeftDriveSmart.spin(forward, lateralMotorPower + turnMotorPower, voltageUnits::volt);
   RightDriveSmart.spin(forward, lateralMotorPower - turnMotorPower, voltageUnits::volt);
 
   // Refreshes lastError variable to update data
   lastError = error;
+  turnLastError = turnError - turnLastError;
   
   // tells the VEX brain to sleep for 20ms so as to not overload system resources
   vex::task::sleep(20);
@@ -214,6 +214,16 @@ double calculatePIDOutput() {
 // This is known as multithreading. 
 
 
+int printRpmThreadCallback () {
+  // Gets the RPM of the left rear motor and stores it in a variable. 
+  int leftBVelocity = leftBackMotor.velocity(rpm);
+  // Prints the velocity using the variable to the terminal.
+  std::cout << leftBVelocity << std::endl;
+  wait(100, msec);
+  this_thread::sleep_for(10);
+  return 0;
+}
+
 int joystickThreadCallback() {
   // Performs a callback to the curveJoystick function, taking Axis 1 and Axis 3 of the controller as values among the other variables.
   double turnVal = curveJoystick(turningRed, Controller1.Axis1.position(percent), turningCurve); // Get curvature according to settings [-100,100]
@@ -227,10 +237,7 @@ int joystickThreadCallback() {
   LeftDriveSmart.spin(forward, forwardVolts + turnVolts, voltageUnits::volt); 
   RightDriveSmart.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
 
-  // Gets the RPM of the left rear motor and stores it in a variable. 
-  int leftBVelocity = leftBackMotor.velocity(rpm);
-  // Prints the velocity using the variable to the terminal.
-  std::cout << leftBVelocity << std::endl;
+  thread printMotorRPM = thread(printRpmThreadCallback);
 
   // Forces the thread for 10 milliseconds to sleep to prevent it from using all of the CPU's resources.
   this_thread::sleep_for(10);
@@ -255,26 +262,66 @@ int flexThreadCallback () {
 }
 
 
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*---------------------------------------------------------------------------*/
 
-int main() {
-  // Initialize the VEX V5 components
+void pre_auton(void) {
   vexcodeInit();
 
   Drivetrain.setStopping(brake);
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
 
-  enablePIDFunction = false;
+}
+
+void autonomous(void) {
+  vex::task autonomousPD (calculatePIDOutput);
+
+  enablePIDFunction = true;
   resetMotorValues = true;
 
-  // vex::task calculatePIDOutput;
+  targetDistance = distanceToTheta(5);
+
+
+  
+  vex::task::sleep(500);
+
+  resetMotorValues = true;
+}
+
+void usercontrol(void) {
+
+  // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
+ enablePIDFunction = false;
 
   // Sets up the multithreading in a while loop that runs forever.
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
     thread flexWheelMotorControl = thread(flexThreadCallback);
     vex::task::sleep(20);
+
+  wait(20, msec);
   }
+}
+
+
+int main() {
+
+
+  // Set up callbacks for autonomous and driver control periods.
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(usercontrol);
+
+  // Runs the pre-autonomous function.
+  pre_auton();
+
+  while (true) {
+    wait(100, msec);
+  }
+
+  enablePIDFunction = false;
+  resetMotorValues = true;
 
 
 }
