@@ -57,8 +57,8 @@ extern brain Brain;
 // This allows for more precision when driving at lower speeds.
 
 
-double turningCurve = 10; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
-double forwardCurve = 10;
+double turningCurve = 20; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
+double forwardCurve = 20;
 
 bool turningRed = false; // Allows the choosing between two curves - A red curve and a blue curve - described below.
 bool forwardRed = false;
@@ -87,7 +87,7 @@ int curveJoystick(bool red, int input, double t){
 int distanceToTheta (int dis){
   int theta;
   int gearRatio = 60/36; // input gear / output gear
-  double wheelDiameter = 4.125; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
+  double wheelDiameter = 4.07; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
   return theta;
@@ -112,7 +112,7 @@ int distanceToTheta (int dis){
 // Constants for the PID controller
 const double kP = 0.1;  // Proportional gain
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
-const double kD = 0.0;  // Derivative gain
+const double kD = 0.1;  // Derivative gain
 
 const double turnkP = 0.0;
 const double turnkD = 0.0;
@@ -150,7 +150,7 @@ int calculatePIDOutput() {
     double rightFrontMotorPosition = rightFrontMotor.position(degrees);
 
     // averages motor position values
-    double averagePosition = (leftBackMotorPosition + leftFrontMotorPosition + rightBackMotorPosition + rightFrontMotorPosition)/ 4; 
+    int averagePosition = (leftBackMotorPosition + leftFrontMotorPosition + rightBackMotorPosition + rightFrontMotorPosition)/ 4; 
 
 
   // Calculate the Proportional.
@@ -169,7 +169,7 @@ int calculatePIDOutput() {
   //////////////////////////
 
   // averages motor turning position informtation
-  float turnDifference = (leftBackMotorPosition + leftFrontMotorPosition - rightBackMotorPosition - rightFrontMotorPosition) / 4;
+  int turnDifference = (leftBackMotorPosition + leftFrontMotorPosition - rightBackMotorPosition - rightFrontMotorPosition) / 4;
 
   // Calculate the turning Potential
   turnError = targetTurnValue - turnDifference;
@@ -219,7 +219,7 @@ int printRpmThreadCallback () {
   int leftBVelocity = leftBackMotor.velocity(rpm);
   // Prints the velocity using the variable to the terminal.
   std::cout << leftBVelocity << std::endl;
-  wait(100, msec);
+  wait(1000, msec);
   this_thread::sleep_for(10);
   return 0;
 }
@@ -281,13 +281,13 @@ void autonomous(void) {
   enablePIDFunction = true;
   resetMotorValues = true;
 
-  targetDistance = distanceToTheta(5);
+  targetDistance = distanceToTheta(10);
 
 
   
   vex::task::sleep(500);
 
-  resetMotorValues = true;
+  
 }
 
 void usercontrol(void) {
@@ -320,8 +320,6 @@ int main() {
     wait(100, msec);
   }
 
-  enablePIDFunction = false;
-  resetMotorValues = true;
 
 
 }
