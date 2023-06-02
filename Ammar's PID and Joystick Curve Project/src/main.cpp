@@ -40,6 +40,7 @@ extern motor leftFrontMotor;
 extern motor rightBackMotor;
 extern motor rightFrontMotor;
 extern motor flexWheel;
+extern motor secondFlexWheel;
 extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
 extern drivetrain Drivetrain;
@@ -85,8 +86,8 @@ int curveJoystick(bool red, int input, double t){
 
 // converting degrees to distance
 int distanceToTheta (int dis){
-  int theta;
-  int gearRatio = 60/36; // input gear / output gear
+  float theta;
+  double gearRatio = 60/36; // input gear / output gear
   double wheelDiameter = 4.07; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
@@ -110,7 +111,7 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.1;  // Proportional gain
+const double kP = 0.01;  // Proportional gain
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
 const double kD = 0.1;  // Derivative gain
 
@@ -249,12 +250,19 @@ int joystickThreadCallback() {
 
 int flexThreadCallback () {
  // 
-  if (Controller1.ButtonA.pressing()) {
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print("Button A is being pressed"); 
+  if (Controller1.ButtonR2.pressing()) {
+    flexWheel.spin(forward, 13, voltageUnits::volt); 
+    secondFlexWheel.spin(forward, 13, voltageUnits::volt);
+  
+
+  }
+  else if(Controller1.ButtonR1.pressing()){
+    flexWheel.spin(reverse, 13, voltageUnits::volt);
+    secondFlexWheel.spin(reverse, 13, voltageUnits::volt);
   }
   else {
-    Brain.Screen.clearScreen();
+    flexWheel.stop();
+    secondFlexWheel.stop();
   }
 
   this_thread::sleep_for(10);
@@ -272,6 +280,8 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
+
+
 
 }
 
