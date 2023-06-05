@@ -1,0 +1,2 @@
+#  vex-robotics 6/5/23
+TOday we thought of how to do odometry without motor 
