@@ -281,6 +281,8 @@ void pre_auton(void) {
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
 
+  Brain.Screen.drawImageFromFile("smartness.png", 0, 0);
+
 
 
 }
