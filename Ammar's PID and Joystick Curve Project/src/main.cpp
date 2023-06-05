@@ -111,9 +111,9 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.01;  // Proportional gain
+const double kP = 0.5;  // Proportional gain
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
-const double kD = 0.1;  // Derivative gain
+const double kD = 0.2;  // Derivative gain
 
 const double turnkP = 0.0;
 const double turnkD = 0.0;
