@@ -58,11 +58,11 @@ extern brain Brain;
 // This allows for more precision when driving at lower speeds.
 
 
-double turningCurve = 20; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
-double forwardCurve = 20;
+double turningCurve = 30; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
+double forwardCurve = 30;
 
-bool turningRed = false; // Allows the choosing between two curves - A red curve and a blue curve - described below.
-bool forwardRed = false;
+bool turningRed = true; // Allows the choosing between two curves - A red curve and a blue curve - described below.
+bool forwardRed = true;
 
 // https://www.desmos.com/calculator/sdcgzah5ya - visualizes the equations used below.
 int curveJoystick(bool red, int input, double t){ 
@@ -87,7 +87,7 @@ int curveJoystick(bool red, int input, double t){
 // converting degrees to distance
 int distanceToTheta (int dis){
   float theta;
-  double gearRatio = 60/36; // input gear / output gear
+  double gearRatio = 1.6666666667; // input gear / output gear
   double wheelDiameter = 4.07; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
@@ -111,9 +111,9 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.5;  // Proportional gain
+const double kP = 0.6;  // Proportional gain
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
-const double kD = 0.2;  // Derivative gain
+const double kD = 0.05;  // Derivative gain
 
 const double turnkP = 0.0;
 const double turnkD = 0.0;
@@ -293,7 +293,8 @@ void autonomous(void) {
   enablePIDFunction = true;
   resetMotorValues = true;
 
-  targetDistance = distanceToTheta(10);
+  targetDistance = distanceToTheta(18);
+  targetDistance = distanceToTheta(-18);
 
 
   
