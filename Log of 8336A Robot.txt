@@ -1,2 +1,2 @@
 #  vex-robotics 6/5/23
-TOday we thought of how to do odometry without motor 
+Today we thought of how to do odometry without motor and instead use Shaft encoder to mke it more accurate we also thoght of how we would attach our punch concept by making a hole in the ramp to punch through it.
