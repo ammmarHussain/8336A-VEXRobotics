@@ -1,16 +1,35 @@
 #  8336A Robot Development Log-  June 5, 2023
 
-Today we thought of ways on how to do odometry without using motors, but rather by utilizing Optical Shaft Encoders, which would be more accurate to measure position with.  We also thought of how we would attach a "Puncher" concept by making a slit in the ramp to make it part of 
+Today we thought of ways on how to do odometry without using motors, but rather by utilizing Optical Shaft Encoders, which would be more accurate to measure position with.  We also thought of how we would attach a "Puncher" 
+concept by making a slit in the ramp to make it part of 
 the ramp and level with it.
-	--> Odometry, in simple terms, is the usage of positional data to estimate a robot's position relative to its starting point on the field. It is very useful in autonomous applications as it allows for very precise movements.
+	--> Odometry, in simple terms, is the usage of positional data to estimate a robot's position relative to its starting point on the field. It is very useful in autonomous applications as it allows for very precise 
+movements.
 
-We also thought of a "Puncher" concept. A puncher is a very rudimentary design - consisting of a motorized rack and pinion system with tension - that could be used to push triballs into goals. We thought of this as we wanted a way to increase the propelling distance that our current intake system has. When prototyped with a Red cartridge 100 RPM motor and utilizing rubber bands for tensioning, we saw that even a 3D printed triball - which is heavier than a real triball -  would be pushed much farther than before. We measured the prototype could push the triball by roughly one foot. 
+We also thought of a "Puncher" concept. A puncher is a very rudimentary design - consisting of a motorized rack and pinion system with tension - that could be used to push triballs into goals. We thought of this as we 
+wanted a way to increase the propelling distance that our current intake system has. When prototyped with a Red cartridge 100 RPM motor and utilizing rubber bands for tensioning, we saw that even a 3D printed triball - 
+which is heavier than a real triball -  would be pushed much farther than before. We measured the prototype could push the triball by roughly one foot. 
 
-While we do not have official field elements currently, we plan to retest our prototype to see how far it would be launched with the official foam triballs. To improve the prototype, we plan on adding what it lacked a locking mechanism like a rachet, 
+While we do not have official field elements currently, we plan to retest our prototype to see how far it would be launched with the official foam triballs. To improve the prototype, we plan on adding what it lacked a 
+locking mechanism like a rachet, 
 so we plan on adding that the next day. Allowing for it to be primmed an not have to wait to be pulled back saving us a small amount of time but ultimately improving the robot.
 
 Improving on our intake system, we added an extra rubber band to add more tension to the arms allowing it to collect more efficiently and to reduce the chances of it opening while holding a triball and moving backwards.
 
-We also relocated the VEX Electronics (Brain, Battery, & VEXnet Radio) from the top of the robot to the back. Previously the battery cable would extend far beyond the base and would extend the length to 4 inches past the 18 inch limit.
+We also relocated the VEX Electronics (Brain, Battery, & VEXnet Radio) from the top of the robot to the back. Previously the battery cable would extend far beyond the base and would extend the length to 4 inches past the 18 
+inch limit.
 
-Lastly, we added diagonal standoffs between the outer and inner drivetrain C-Channels to prevent parallel shifting on the outer parts of the drivetrain. This is not permanent and most likely will have to be sacrificed to make space for the future odometry system.  This more serves as a concept of how we want to further stablize our drivetrain rather than an actual design method.
+Lastly, we added diagonal standoffs between the outer and inner drivetrain C-Channels to prevent parallel shifting on the outer parts of the drivetrain. This is not permanent and most likely will have to be sacrificed to 
+make space for the future odometry system.  This more serves as a concept of how we want to further stablize our drivetrain rather than an actual design method.
+
+#  8336A Robot Development Log- June 6, 2023
+
+Today we changed the intake as it stressed our base too much causing it to have camber. 
+
+We changed the position of the end standoff (where the rubber band ends) and as well we added a spacer above our pivot allowing for a smoother transition of force on the rubber band as well the base would not experience
+camber
+
+We also made sure that the robot was in the size constraint, so we have to move the brain one peg in tomorrow. 
+
+One concept we thought of to improve our intake is to make
+it retractable as to save space. This could be via a locking mechanism that’s released at the start of the round such as pneumatics or mechanical mechanisms with rubber bands.
