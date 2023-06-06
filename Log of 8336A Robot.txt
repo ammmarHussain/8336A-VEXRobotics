@@ -1,9 +1,14 @@
 #  Vex-robotics 6/5/23
 
-Today we thought of how to do odometry without motor and instead use Optical Shaft encoder to make it more accurate we also thought of how we would attach our punch concept by making a slit in the ramp to make it part of the ramp and level with it.
+Today we thought of how to do odometry without motor and instead use Optical Shaft encoder to make it more accurate we also thought of how we would attach our punch concept by making a slit in the ramp to make it part of 
+the ramp and level with it.
 
-Later on, we created the puncher prototype this is a very rudimentary design that could be used because when tested we saw that even with a heavy 3-d printer triball it would be pushed a considerable amount we measured about a foot. When the field elements arrive later on, we will retest to see how far it would be launched with the foam triballs. To improve the prototype, we plan on adding what it lacked a locking mechanism like a rachet, so we plan on adding that the next day. Allowing for it to be primmed an not have to wait to be pulled back saving us a small amount of time but ultimately improving the robot.
+Later on, we created the puncher prototype this is a very rudimentary design that could be used because when tested we saw that even with a heavy 3-d printer triball it would be pushed a considerable amount we measured
+about a foot. When the field elements arrive later on, we will retest to see how far it would be launched with the foam triballs. To improve the prototype, we plan on adding what it lacked a locking mechanism like a rachet, 
+so we plan on adding that the next day. Allowing for it to be primmed an not have to wait to be pulled back saving us a small amount of time but ultimately improving the robot.
 
-We also Changed the location of the brain, battery, and radio as it was taking too much space where it was, so we moved it to the back of the base and attached it vertically to rather than horizontal. As well we added an extra rubber band to the intake to add more tension to the arms allowing it to collect more efficiently.
+We also Changed the location of the brain, battery, and radio as it was taking too much space where it was, so we moved it to the back of the base and attached it vertically to rather than horizontal. As well we added an 
+extra rubber band to the intake to add more tension to the arms allowing it to collect more efficiently.
 
-Lastly, we added supporting standoff diagonally to prevent parallel shifting on the outer parts of the rive train this is not permanent and most likely will be moved because we intend on adding a free spinning wheel for odometry where it currently is and then moving the supporting structure, but the concept will stay the same.
+Lastly, we added supporting standoff diagonally to prevent parallel shifting on the outer parts of the rive train this is not permanent and most likely will be moved because we intend on adding a free spinning wheel for 
+odometry where it currently is and then moving the supporting structure, but the concept will stay the same.
