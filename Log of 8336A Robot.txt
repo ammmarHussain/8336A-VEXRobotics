@@ -26,10 +26,11 @@ make space for the future odometry system.  This more serves as a concept of how
 
 Today we changed the intake as it stressed our base too much causing it to have camber. 
 
-We changed the position of the end standoff (where the rubber band ends) and as well we added a spacer above our pivot allowing for a smoother transition of force on the rubber band as well the base would not experience
-camber
+We changed the position of the end standoff (where the rubber band ends) and as well we added a spacer above our pivot for the intake arms allowing for a smoother transition of force on the rubber band.
+As well the base would not experience camber.
 
-We also made sure that the robot was in the size constraint, so we have to move the brain one peg in tomorrow. 
+We also made sure that the robot was in the size constraint, so we have to move the brain one peg in towards the middle tomorrow. 
 
-One concept we thought of to improve our intake is to make
-it retractable as to save space. This could be via a locking mechanism that’s released at the start of the round such as pneumatics or mechanical mechanisms with rubber bands.
+One concept we thought of to improve our intake is to make it retractable as to save space. 
+This could be via a locking mechanism that’s released at the start of the round such as pneumatics or mechanical mechanisms with rubber bands.
+This would give ouse more space on the constraints to work and have more space to impliment our "puncher".
