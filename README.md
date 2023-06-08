@@ -10,5 +10,5 @@
 >> Contains an example implementation of the PIDController.h, with the main function of the program being oriented on actually implementing the controller. More specifically, it creates motors and groups them into motor groups and drivetrains, and creates a PID controller for both the left side and the right side, with the implementation moving a certain amount of inches, these being calculated by the function DisToTheta.
 > ### Ammar's PID and Joystick Curve
 >> TBW
-> ### Logs and Virtual Note Book
+> ### Virtual Note Book
 >> TBW
