@@ -33,4 +33,17 @@ We also made sure that the robot was in the size constraint, so we have to move 
 
 One concept we thought of to improve our intake is to make it retractable as to save space. 
 This could be via a locking mechanism that’s released at the start of the round such as pneumatics or mechanical mechanisms with rubber bands.
-This would give ouse more space on the constraints to work and have more space to impliment our "puncher".
+This would give ouse more space in the constraints to work and have more space to impliment our "puncher".
+
+#  8336A Robot Development Log- June 7, 2023
+
+Today’s main discussion was we were our goals going into the summer and as well what we wanted to accomplish when the next school year started. One major topic we discussed was how we wanted to collaborate with our new 
+sister team as our senior team is leaving. 
+
+We think our method of collaboration is “friend competition” in the sense of which team can prototype this idea better, faster, and or efficiently. Whichever team was would have 
+their design worked upon by both teams and this would result in both teams benefiting. This will be tested and documented later on.
+
+Another concept was the “Bank.” The bank would be a collective storage for our metals in the vex room because this year will be having two teams collaborating with each other instead of one prioritized team. This would 
+make it more effective when I came to cleaning up as there is few locations for metals rather just one now. 
+
+We also planned out a layout for the room to accommodate for both teams. Tomorrow we are going to sketch the layout and start cleaning the room for later accommodation of our teams.
