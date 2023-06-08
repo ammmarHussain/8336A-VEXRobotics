@@ -17,7 +17,7 @@ using namespace vex;
 
 int DisToTheta (int dis){
   int theta;
-  int gearRatio = 60/36;
+  int gearRatio = 1.67;
   double wheelDiameter = 4.07;
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
