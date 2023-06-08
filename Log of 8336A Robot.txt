@@ -37,13 +37,11 @@ This would give ouse more space in the constraints to work and have more space t
 
 #  8336A Robot Development Log- June 7, 2023
 
-Today’s main discussion was we were our goals going into the summer and as well what we wanted to accomplish when the next school year started. One major topic we discussed was how we wanted to collaborate with our new 
-sister team as our senior team is leaving. 
+Today’s main discussion was what our development goals going into the summer would be and what we wanted to accomplish when the next school year started. One major topic we discussed was how we wanted to collaborate with our newer sister teams as they begin their journey into robotics.
 
-We think our method of collaboration is “friendly rivalry” in the sense of which team can prototype this idea better, faster, and or efficiently. Whichever team was would have 
+We decided a good method of collaboration would be to participate in “friendly rivalry” in the sense of which team can come up with and prototype ideas better, faster, or more efficiently. A team could have 
 their design worked upon by both teams and this would result in both teams benefiting. This will be tested and documented later on.
 
-Another concept was the “Bank.” The bank would be a collective storage for our metals in the vex room because this year will be having two teams collaborating with each other instead of one prioritized team. This would 
-make it more effective when I came to cleaning up as there is few locations for metals rather just one now. 
+Another concept was a bank. The bank would be a collective storage for chassis parts in a dedicated robotics room. This is ideal because this year, there will be two teams collaborating with each other, rather than one prioritized team. This would be better for organization because there would be fewer locations for metals to be scattered around.
 
-We also planned out a layout for the room to accommodate for both teams. Tomorrow we are going to sketch the layout and start cleaning the room for later accommodation of our teams.
+We also planned out a layout for the dedicated robotics room to accommodate for both teams. Tomorrow we are going to sketch the layout and start cleaning the room for later accommodation of our teams.
