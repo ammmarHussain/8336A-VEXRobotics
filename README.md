@@ -1,4 +1,6 @@
 # Team 8336A - Gladiator Robotics
+![HGHS_Robotics_Logo-Ver0 12](https://github.com/mochi48/8336A-VEXRobotics/assets/105319861/e574f779-8455-494d-9139-98775cb3b4c8)
+
 
 
 > ## Programming Outline
