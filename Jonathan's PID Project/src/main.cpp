@@ -16,8 +16,8 @@
 using namespace vex;
 
 int DisToTheta (int dis){
-  int theta;
-  int gearRatio = 1.67;
+  double theta;
+  double gearRatio = 1.67;
   double wheelDiameter = 4.07;
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
@@ -31,7 +31,6 @@ int main() {
   // initialize robot configuration
   vexcodeInit();
   
-  
   // brings motors from robot-config.cpp
   // labeled A is front, labeled B is back
   extern motor leftMotorA;
@@ -39,16 +38,16 @@ int main() {
   extern motor rightMotorA;
   extern motor rightMotorB;
 
+  // create groupings
   motor_group leftDriveSmart = motor_group(leftMotorA, leftMotorB);
   motor_group rightDriveSmart = motor_group(rightMotorA, rightMotorB);
   drivetrain Drivetrain = drivetrain(leftDriveSmart, rightDriveSmart);
 
   // create and configure PID controllers
-  PIDController leftMotorsController(0.1, 0.0, 0.0);
-  PIDController rightMotorsController(0.1, 0.0, 0.0);
+  PIDController motorController(0.6, 0.0, 0.7);
 
   // sets desired distance
-  double desiredDistance = DisToTheta(20);
+  double desiredDistance = DisToTheta(18);
 
   // reset motors
   leftMotorA.setPosition(0, degrees);
@@ -58,8 +57,6 @@ int main() {
 
   // run pid loop
   while (true) {
-    
-    Drivetrain.setStopping(hold);
 
     // get all motor positions
     double leftMotorAPos = leftMotorA.position(degrees);
@@ -68,16 +65,13 @@ int main() {
     double rightMotorBPos = rightMotorB.position(degrees);
 
     // average motor positions
-    double leftMotorAverage = (leftMotorAPos + leftMotorBPos) / 2;
-    double rightMotorAverage = (rightMotorAPos + rightMotorBPos) / 2;
+    double motorAverage = (leftMotorAPos + leftMotorBPos + rightMotorAPos + rightMotorBPos) / 4;
 
     // calculate PIDs
-    double PIDOutputLeftMotors = leftMotorsController.calculatePIDOutput(desiredDistance, leftMotorAverage);
-    double PIDOutputRightMotors = rightMotorsController.calculatePIDOutput(desiredDistance, rightMotorAverage);
+    double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
     
     // send spin command
-
-    leftDriveSmart.spin(directionType::fwd, PIDOutputLeftMotors, voltageUnits::volt);
-    rightDriveSmart.spin(directionType::fwd, PIDOutputRightMotors, voltageUnits::volt);
+    leftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
+    rightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
   }  
 }

@@ -1,3 +1,5 @@
+#include <iostream>
+
 // create PID controller class
 class PIDController {
     
@@ -26,6 +28,11 @@ class PIDController {
             integral += error;
             derivative = error - lastError;
             lastError = error;
+
+            std::cout << proportionalGain * error << ", " << integralGain * integral << ", " << derivativeGain * derivative << std::endl; 
+            // std::cout << proportionalGain * error + integralGain * integral + derivativeGain * derivative << std::endl;
+            
+            
             return (proportionalGain * error + integralGain * integral + derivativeGain * derivative);
         }
 };
