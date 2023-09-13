@@ -11,10 +11,12 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// leftBackMotor        motor          3               
-// leftFrontMotor       motor          4               
-// rightBackMotor       motor          7               
-// rightFrontMotor      motor          8               
+// leftBackMotor        motor          12               
+// leftFrontMotor       motor          5               
+// rightBackMotor       motor          17               
+// rightFrontMotor      motor          16
+// leftFlexWheel        motor          4
+// rightFlexWheel       motor          11
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -45,8 +47,6 @@ extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
 extern drivetrain Drivetrain;
 extern brain Brain;
-
-
 
 
 /*---------------------------------------------------------------------------*/
@@ -96,6 +96,7 @@ int distanceToTheta (int dis){
 
 
 
+
 /*---------------------------------------------------------------------------*/
 /*                 Proportional - Integral - Derivative Function             */
 /*---------------------------------------------------------------------------*/
@@ -111,9 +112,9 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.4;  // Proportional gain
+const double kP = 0.4;  // Proportional gain - provides bulk of the power
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
-const double kD = 0.90;  // Derivative gain
+const double kD = 0.90;  // Derivative gain - tangent slope that looks at if the robot is moving too slow or fast
 
 const double turnkP = 0.0;
 const double turnkD = 0.0;
@@ -185,9 +186,11 @@ int calculatePIDOutput() {
 
   // Calculates motor power for turns
   double turnMotorPower = (turnkP * turnError) + (turnkD * turnDerivative);
-  // Calculate motor power for lateral movement
-  double lateralMotorPower = (kP * error) + (kD * derivative);
+  // Calculate motor power for lateral movement -
+  double lateralMotorPower = (kP * error) + (kD * derivative); 
   
+
+
   LeftDriveSmart.spin(forward, lateralMotorPower + turnMotorPower, voltageUnits::volt);
   RightDriveSmart.spin(forward, lateralMotorPower - turnMotorPower, voltageUnits::volt);
 
@@ -223,6 +226,7 @@ int printRpmThreadCallback () {
   wait(1000, msec);
   this_thread::sleep_for(10);
   return 0;
+  
 }
 
 int joystickThreadCallback() {
@@ -322,8 +326,6 @@ void usercontrol(void) {
 
 
 int main() {
-
-
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
@@ -334,7 +336,4 @@ int main() {
   while (true) {
     wait(100, msec);
   }
-
-
-
 }

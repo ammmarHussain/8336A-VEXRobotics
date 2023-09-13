@@ -44,10 +44,10 @@ int main() {
   drivetrain Drivetrain = drivetrain(leftDriveSmart, rightDriveSmart);
 
   // create and configure PID controllers
-  PIDController motorController(0.6, 0.0, 0.7);
+  PIDController motorController(0.6, 0.0, 0.0);
 
   // sets desired distance
-  double desiredDistance = DisToTheta(18);
+  double desiredDistance = DisToTheta(200);
 
   // reset motors
   leftMotorA.setPosition(0, degrees);
@@ -73,5 +73,6 @@ int main() {
     // send spin command
     leftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     rightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
+    std::cout << desiredDistance << std::endl; 
   }  
 }

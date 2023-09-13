@@ -29,7 +29,7 @@ class PIDController {
             derivative = error - lastError;
             lastError = error;
 
-            std::cout << proportionalGain * error << ", " << integralGain * integral << ", " << derivativeGain * derivative << std::endl; 
+           
             // std::cout << proportionalGain * error + integralGain * integral + derivativeGain * derivative << std::endl;
             
             
