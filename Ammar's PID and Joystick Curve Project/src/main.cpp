@@ -112,12 +112,12 @@ int distanceToTheta (int dis){
 
 
 // Constants for the PID controller
-const double kP = 0.4;  // Proportional gain - provides bulk of the power
+const double kP = 0.2;  // Proportional gain - provides bulk of the power
 // const double kI = 0.0;  // Integral gain - Not recommended for drivetrain, so it is left out.
-const double kD = 0.90;  // Derivative gain - tangent slope that looks at if the robot is moving too slow or fast
+const double kD = 0.20;  // Derivative gain - tangent slope that looks at if the robot is moving too slow or fast
 
-const double turnkP = 0.0;
-const double turnkD = 0.0;
+const double turnkP = 0.06;
+const double turnkD = 0;
 
 int targetDistance;  // Desired distance to travel
 int targetTurnValue = 0;
@@ -297,10 +297,12 @@ void autonomous(void) {
   enablePIDFunction = true;
   resetMotorValues = true;
 
-  targetDistance = distanceToTheta(18);
-  waitUntil(error == 0);
-  resetMotorValues = true;
-  targetDistance = distanceToTheta(-18);
+  // targetDistance = distanceToTheta(18);
+  // waitUntil(error == 0);
+  // resetMotorValues = true;
+  targetTurnValue = distanceToTheta(9);
+  waitUntil(turnError == 0);
+  // targetDistance = distanceToTheta(-18);
 
 
   
