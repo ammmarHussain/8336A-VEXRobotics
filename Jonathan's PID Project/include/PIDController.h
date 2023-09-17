@@ -14,7 +14,7 @@ class PIDController {
 
     // create all class methods
     public:
-
+        double error;
         // constructer method - used to initiate controller
         PIDController(double newProportionalGain, double newIntegralGain, double newDerivativeGain) {
           proportionalGain = newProportionalGain;
@@ -24,7 +24,7 @@ class PIDController {
 
         // used to calculate pid
         double calculatePIDOutput(double targetDistance, double currentDistance) {
-            double error = targetDistance - currentDistance;
+            error = targetDistance - currentDistance;
             integral += error;
             derivative = error - lastError;
             lastError = error;

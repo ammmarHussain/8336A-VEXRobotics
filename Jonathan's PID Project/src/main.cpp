@@ -82,10 +82,11 @@ bool enablePID = true;
 // sets desired distance
 double desiredDistance = 0;
 
+PIDController motorController(0.05, 0.0, 0.0);
 int drivePID() {
 
   // create and configure PID controllers 
-  PIDController motorController(0.05, 0.0, 0.0);
+
  
 
   // run pid loop
@@ -103,11 +104,11 @@ int drivePID() {
 
     // calculate PIDs
     double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
-    
+    std::cout << "error: " << motorController.error << std::endl;
     // send spin command
     LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
-    std::cout << desiredDistance << std::endl;
+    
 
     vex::task::sleep(20); 
   } 
@@ -128,8 +129,7 @@ int drivePID() {
 int printRpmThreadCallback () {
   // Gets the RPM of the left rear motor and stores it in a variable. 
   int leftBVelocity = leftBackMotor.velocity(rpm);
-  // Prints the velocity using the variable to the terminal.
-  std::cout << leftBVelocity << std::endl;
+  // Prints the velocity using the variable to the terminal
   wait(1000, msec);
   this_thread::sleep_for(10);
   return 0;
@@ -175,10 +175,13 @@ void pre_auton(void) {
 void autonomous(void) {
   enablePID = true;
   vex::task autonomousPD (drivePID);
-  enablePID = true;
   resetMotorValues();
-  desiredDistance = DisToTheta(10);
+  desiredDistance = DisToTheta(4);
+  waitUntil(motorController.error == 0);
+  resetMotorValues();
 
+
+  
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
   // resetMotorValues();
