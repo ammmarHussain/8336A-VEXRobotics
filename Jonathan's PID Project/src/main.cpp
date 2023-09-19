@@ -36,7 +36,7 @@ extern drivetrain Drivetrain;
 
 int DisToTheta (int dis){
   double theta;
-  double gearRatio = 1.67;
+  double gearRatio = 1.6666666666666666666666666666666666666666666667;
   double wheelDiameter = 4.07;
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
@@ -78,21 +78,16 @@ void resetMotorValues() {
   rightFrontMotor.setPosition(0, degrees);
 
 }
-bool enablePID = true;
+bool enablePID = false;
 // sets desired distance
 double desiredDistance = 0;
 
-PIDController motorController(0.05, 0.0, 0.0);
+PIDController motorController(0.5, 0, 0.1);
 int drivePID() {
-
-  // create and configure PID controllers 
-
- 
 
   // run pid loop
   while (enablePID) {
-    resetMotorValues();
-
+ 
     // get all motor positions
     double leftFrontMotorPos = leftFrontMotor.position(degrees);
     double leftBackMotorPos = leftBackMotor.position(degrees);
@@ -104,7 +99,8 @@ int drivePID() {
 
     // calculate PIDs
     double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
-    std::cout << "error: " << motorController.error << std::endl;
+    std::cout << "avg: " << motorAverage << " ";
+    std::cout << "err: " << motorController.error << std::endl;
     // send spin command
     LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
@@ -125,17 +121,6 @@ int drivePID() {
 // threads will allow you to run multiple functions in a loop simoultaenously.
 // This is known as multithreading. 
 
-
-int printRpmThreadCallback () {
-  // Gets the RPM of the left rear motor and stores it in a variable. 
-  int leftBVelocity = leftBackMotor.velocity(rpm);
-  // Prints the velocity using the variable to the terminal
-  wait(1000, msec);
-  this_thread::sleep_for(10);
-  return 0;
-  
-}
-
 int joystickThreadCallback() {
   // Performs a callback to the curveJoystick function, taking Axis 1 and Axis 3 of the controller as values among the other variables.
   double turnVal = curveJoystick(turningRed, Controller1.Axis1.position(percent), turningCurve); // Get curvature according to settings [-100,100]
@@ -148,8 +133,6 @@ int joystickThreadCallback() {
   // Applies the voltages to the motors.
   LeftDriveSmart.spin(forward, forwardVolts + turnVolts, voltageUnits::volt); 
   RightDriveSmart.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-
-  thread printMotorRPM = thread(printRpmThreadCallback);
 
   // Forces the thread for 10 milliseconds to sleep to prevent it from using all of the CPU's resources.
   this_thread::sleep_for(10);
@@ -176,33 +159,23 @@ void autonomous(void) {
   enablePID = true;
   vex::task autonomousPD (drivePID);
   resetMotorValues();
-  desiredDistance = DisToTheta(4);
-  waitUntil(motorController.error == 0);
-  resetMotorValues();
-
-
-  
+  desiredDistance = DisToTheta(24);
+  waitUntil(motorController.error==0);
+  desiredDistance = DisToTheta(-24);
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
   // resetMotorValues();
   // targetDistance = distanceToTheta(-18);
-
-
-  
   vex::task::sleep(500);
-
-  
 }
 
 void usercontrol(void) {
-
   // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
   enablePID = false;
   // Sets up the multithreading in a while loop that runs forever.
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
     vex::task::sleep(20);
-
   wait(20, msec);
   }
 }

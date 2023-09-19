@@ -1,0 +1,18 @@
+{
+	"project": {
+		"name": "JonathanPID",
+		"slot": 2,
+		"description": "Empty V5 C++ Project",
+		"platform": "V5",
+		"creationDate": "Sun, 17 Sep 2023 17:28:23 GMT",
+		"language": "cpp",
+		"sdkVersion": "V5_20220726_10_00_00",
+		"cpp": {
+			"includePath": []
+		}
+	},
+	"extension": {
+		"version": "0.5.0",
+		"json": 1
+	}
+}

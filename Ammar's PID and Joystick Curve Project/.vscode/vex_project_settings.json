@@ -1,0 +1,18 @@
+{
+	"project": {
+		"name": "Ammars-PID-Joystick",
+		"slot": 3,
+		"description": "Empty V5 C++ Project",
+		"platform": "V5",
+		"creationDate": "Sun, 17 Sep 2023 17:26:28 GMT",
+		"language": "cpp",
+		"sdkVersion": "V5_20220726_10_00_00",
+		"cpp": {
+			"includePath": []
+		}
+	},
+	"extension": {
+		"version": "0.5.0",
+		"json": 1
+	}
+}
