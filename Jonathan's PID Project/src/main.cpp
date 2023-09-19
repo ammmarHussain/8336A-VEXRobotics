@@ -151,7 +151,7 @@ void pre_auton(void) {
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
 
-  Brain.Screen.drawImageFromFile("roboticslogo.png", 0, 0);
+  Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 
 }
 
