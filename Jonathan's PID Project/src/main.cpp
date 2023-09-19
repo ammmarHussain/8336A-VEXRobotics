@@ -82,7 +82,7 @@ bool enablePID = false;
 // sets desired distance
 double desiredDistance = 0;
 
-PIDController motorController(0.5, 0, 0.1);
+PIDController motorController(0.05, 0, 0.02);
 int drivePID() {
 
   // run pid loop
@@ -106,7 +106,7 @@ int drivePID() {
     RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     
 
-    vex::task::sleep(20); 
+    vex::task::sleep(7); 
   } 
   return 1; 
 }
@@ -151,7 +151,7 @@ void pre_auton(void) {
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
 
-  Brain.Screen.drawImageFromFile("smartness.png", 0, 0);
+  Brain.Screen.drawImageFromFile("roboticslogo.png", 0, 0);
 
 }
 
