@@ -78,14 +78,19 @@ void resetMotorValues() {
   rightFrontMotor.setPosition(0, degrees);
 
 }
+
 bool enablePID = false;
+
 // sets desired distance
 double desiredDistance = 0;
 
 // sets desired rotation
 double drivetrainRotation = 0;
 
-PIDController motorController(0.05, 0, 0.02);
+// create motor contollers
+PIDController leftMotorController(0.05, 0, 0.02);
+PIDController rightMotorController(0.05, 0, 0.02);
+
 int drivePID() {
 
   // run pid loop
@@ -98,19 +103,22 @@ int drivePID() {
     double rightBackMotorPos = rightBackMotor.position(degrees);
 
     // average motor positions
-    double motorAverage = (leftFrontMotorPos + leftBackMotorPos + rightFrontMotorPos + rightBackMotorPos) / 4;
+    double leftMotorAverage = (leftFrontMotorPos + leftBackMotorPos) / 2;
+    double rightMotorAverage = (rightBackMotorPos + rightFrontMotorPos) / 2;
 
-    // calculate PIDs
-    double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
-    std::cout << "avg: " << motorAverage << " ";
-    std::cout << "err: " << motorController.error << std::endl;
-    
     // calculate wheel rotation
     float wheelRotation = drivetrainRotation*6/2.0625;
 
+    // calculate PIDs
+    double leftPIDOutput = leftMotorController.calculatePIDOutput(desiredDistance + wheelRotation, leftMotorAverage);
+    double rightPIDOutput = rightMotorController.calculatePIDOutput(desiredDistance - wheelRotation, rightMotorAverage);
+
+    std::cout << "avg: " << motorAverage << " ";
+    std::cout << "err: " << motorController.error << std::endl;
+    
     // send spin command
-    LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors + wheelRotation, voltageUnits::volt);
-    RightDriveSmart.spin(directionType::fwd, PIDOutputMotors - wheelRotation, voltageUnits::volt);
+    LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
+    RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
 
     vex::task::sleep(7); 
   } 
