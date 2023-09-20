@@ -82,6 +82,9 @@ bool enablePID = false;
 // sets desired distance
 double desiredDistance = 0;
 
+// sets desired rotation
+double drivetrainRotation = 0;
+
 PIDController motorController(0.05, 0, 0.02);
 int drivePID() {
 
@@ -101,10 +104,13 @@ int drivePID() {
     double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
     std::cout << "avg: " << motorAverage << " ";
     std::cout << "err: " << motorController.error << std::endl;
-    // send spin command
-    LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
-    RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     
+    // calculate wheel rotation
+    float wheelRotation = drivetrainRotation*6/2.0625;
+
+    // send spin command
+    LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors + wheelRotation, voltageUnits::volt);
+    RightDriveSmart.spin(directionType::fwd, PIDOutputMotors - wheelRotation, voltageUnits::volt);
 
     vex::task::sleep(7); 
   } 
@@ -150,7 +156,6 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
-
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 
 }
@@ -159,9 +164,10 @@ void autonomous(void) {
   enablePID = true;
   vex::task autonomousPD (drivePID);
   resetMotorValues();
-  desiredDistance = DisToTheta(24);
-  waitUntil(motorController.error==0);
-  desiredDistance = DisToTheta(-24);
+  drivetrainRotation = 90;
+  //desiredDistance = DisToTheta(24);
+  //waitUntil(motorController.error==0);
+  //desiredDistance = DisToTheta(-24);
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
   // resetMotorValues();
