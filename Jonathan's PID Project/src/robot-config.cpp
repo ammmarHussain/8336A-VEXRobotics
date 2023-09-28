@@ -15,7 +15,6 @@ motor rightBackMotor = motor(PORT16, ratio18_1, false);
 motor rightFrontMotor = motor(PORT17, ratio18_1, false);
 
 inertial DrivetrainInertial = inertial(PORT19);
-digital_out pneumatics = digital_out(Brain.ThreeWirePort.A);
 
 
 

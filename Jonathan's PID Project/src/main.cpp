@@ -1,5 +1,8 @@
 // import required libraries
 #include "vex.h"
+#include "PIDController.h"
+#include <cmath>
+#include <iostream>
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
@@ -8,13 +11,13 @@
 // leftFrontMotor       motor         3              
 // leftBackMotor        motor         12              
 // rightFrontMotor      motor         16              
-// rightBackMotor       motor         17              
+// rightBackMotor       motor         17
+//
+// rightCylinder        digital_out   A
+// leftCylinder         digital_out   C
+//
+// limitSwitch          limit         B              
 // ---- END VEXCODE CONFIGURED DEVICES ----
-#include "PIDController.h"
-#include "vex.h"
-#include <cmath>
-#include <iostream>
-
 
 // include namespace vex
 using namespace vex;
@@ -22,7 +25,14 @@ competition Competition;
 
 
 
-// brings motors from robot-config.cpp
+
+/*---------------------------------------------------------------------------*/
+/*                               Externing Motors                            */
+/*---------------------------------------------------------------------------*/
+
+// announces motors and devices from robot-config.cpp as variables for functions to reference 
+// this 'globalizes' them and allows these devices to be used anywhere in this program
+// whereas beforehand these motors could only be referenced in robot-config.cpp
 
 extern motor leftBackMotor;
 extern motor leftFrontMotor;
@@ -34,10 +44,16 @@ extern motor_group RightDriveSmart;
 extern drivetrain Drivetrain;
 
 
+
+/*---------------------------------------------------------------------------*/
+/*                  Converting Motor Encoder Ticks to Inches                 */
+/*---------------------------------------------------------------------------*/
+
+// converting degrees to distance
 int DisToTheta (int dis){
   double theta;
-  double gearRatio = 1.6666666666666666666666666666666666666666666667;
-  double wheelDiameter = 4.25;
+  double gearRatio = 1.6666666666666666666666666666666666666666666667; // motor gear / wheel gear -> 60/36
+  double wheelDiameter = 4.25; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
   double wheelCircumference = wheelDiameter * M_PI;
   theta = (dis*360) / (wheelCircumference *gearRatio);
   return theta;
@@ -71,17 +87,40 @@ int curveJoystick(bool red, int input, double t){
   return val;
 }
 
+
+/*---------------------------------------------------------------------------*/
+/*                 Proportional - Integral - Derivative Function             */
+/*---------------------------------------------------------------------------*/
+
+// A Proportional Integral Derivative Function - PID for short - uses values about the positions of the motors in a drivetrain.
+// A PID that is fine tuned for a specific build of robot is highly useful as it allows for precise movements that autocorrect if need be.
+// PIDs are broken up into 3 math terms that are explained further below.
+
+//////////////////////////
+// Prerequisites /////////
+//////////////////////////
+
+// This function resets the positional values for each motor to 0.
+// This is referenced at the beginning of the autonoumous function before the PID is initialized.
+// The function is needed so that the error does not get offsetted by a previous momvement, which could lead to inaccuracy.
 void resetMotorValues() {
   leftBackMotor.setPosition(0, degrees);
   leftFrontMotor.setPosition(0, degrees);
   rightBackMotor.setPosition(0, degrees);
-  rightFrontMotor.setPosition(0, degrees);
-
+  rightFrontMotor.setPosition(0, degrees); 
 }
+
+// This boolean is to check whether the PID should be ran or not. 
+// In user control, it should be false - which disables the PID - so as to not interfere with the controller inputs.
 bool enablePID = false;
-// sets desired distance
+
+// Initializes the distance that we want the robot to travel. It is a double for more precise values.
+// This distance is measured in a motor's encoder ticks, but we reference the disToTheta function from before to convert it to inches.
 double desiredDistance = 0;
 
+
+// This is an object of the PID class found in PIDController.h
+// The 3 values are the tuning values of kP, kI, and KD.
 PIDController motorController(0.4, 0, 0);
 
 int drivePID() {
@@ -89,7 +128,7 @@ int drivePID() {
   // run pid loop
   while (enablePID) {
  
-    // get all motor positions
+    // Retrieves the position of the motors in degrees
     double leftFrontMotorPos = leftFrontMotor.position(degrees);
     double leftBackMotorPos = leftBackMotor.position(degrees);
     double rightFrontMotorPos = rightFrontMotor.position(degrees);
@@ -123,6 +162,12 @@ int drivePID() {
 // threads will allow you to run multiple functions in a loop simoultaenously.
 // This is known as multithreading. 
 
+// A thread can be made by writing an int/void function as normal, but including "this_thread::sleep_for(10);" at the end of the function.
+// This thread can be initalized later in the program.
+
+
+// This thread allows us to set a curve for the joystick during user control. 
+// Without this thread, the movement was very jittery and delayed.
 int joystickThreadCallback() {
   // Performs a callback to the curveJoystick function, taking Axis 1 and Axis 3 of the controller as values among the other variables.
   double turnVal = curveJoystick(turningRed, Controller1.Axis1.position(percent), turningCurve); // Get curvature according to settings [-100,100]
@@ -144,7 +189,9 @@ int joystickThreadCallback() {
   return 0;
 }
 
-
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
   vexcodeInit();
@@ -157,6 +204,10 @@ void pre_auton(void) {
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 
 }
+
+/*---------------------------------------------------------------------------*/
+/*                              Autonomous Code                              */
+/*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
   enablePID = true;
@@ -172,6 +223,11 @@ void autonomous(void) {
   // targetDistance = distanceToTheta(-18);
   vex::task::sleep(500);
 }
+
+
+/*---------------------------------------------------------------------------*/
+/*                             User Control Code                             */  
+/*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
   // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
