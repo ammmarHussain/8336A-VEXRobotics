@@ -4,108 +4,61 @@
 #include <cmath>
 #include <iostream>
 
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// leftFrontMotor       motor         3              
-// leftBackMotor        motor         12              
-// rightFrontMotor      motor         16              
-// rightBackMotor       motor         17
-//
-// rightCylinder        digital_out   A
-// leftCylinder         digital_out   C
-//
-// limitSwitch          limit         B              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
-// include namespace vex
+// configure program
 using namespace vex;
 competition Competition;
 
-
-
-
-/*---------------------------------------------------------------------------*/
-/*                               Externing Motors                            */
-/*---------------------------------------------------------------------------*/
-
-// announces motors and devices from robot-config.cpp as variables for functions to reference 
-// this 'globalizes' them and allows these devices to be used anywhere in this program
-// whereas beforehand these motors could only be referenced in robot-config.cpp
-
+// add all motors to program
 extern motor leftBackMotor;
 extern motor leftFrontMotor;
 extern motor rightBackMotor;
 extern motor rightFrontMotor;
+extern motor catapultMotor;
 
+// motor groups for left and right
 extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
+
+// define drivetrain
 extern drivetrain Drivetrain;
 
-extern motor catapultMotor;
+// misc. definitions
 extern limit cataLimit;
-
 extern digital_out pneuCylinders;
 
-/*---------------------------------------------------------------------------*/
-/*                  Converting Motor Encoder Ticks to Inches                 */
-/*---------------------------------------------------------------------------*/
-
-// converting degrees to distance
-int DisToTheta (int dis){
-  double theta;
-  double gearRatio = 1.6666666666666666666666666666666666666666666667; // motor gear / wheel gear -> 60/36
-  double wheelDiameter = 4.25; // Omni Wheels have a slightly larger diamater than traditional 4 inch wheels.
+// converts distance to rotations
+int distanceToTheta (int distance){
+  double gearRatio = 1.6666666666666666666666666666666666666666666667;
+  double wheelDiameter = 4.25;
   double wheelCircumference = wheelDiameter * M_PI;
-  theta = (dis*360) / (wheelCircumference *gearRatio);
+  double theta = (distance*360) / (wheelCircumference *gearRatio);
   return theta;
 }
 
-/*---------------------------------------------------------------------------*/
-/*                               Joystick Curve                              */
-/*---------------------------------------------------------------------------*/
-
-// This adjusts the sensitivity of the controller's left and right joysticks.
-// It maintains the maximum speed of the motors, only affecting the middle-range.
-// This allows for more precision when driving at lower speeds.
-
-
-double turningCurve = 30; // Separate curve values allow one to tune the sensitivity of turning and lateral movement individually.
+// lateral and turning sensitivity
+double turningCurve = 30;
 double forwardCurve = 30;
 
-bool turningRed = false; // Allows the choosing between two curves - A red curve and a blue curve - described below.
+// chooses between two turns
+bool turningRed = false; 
 bool forwardRed = false;
 
-// https://www.desmos.com/calculator/sdcgzah5ya - visualizes the equations used below.
+// https://www.desmos.com/calculator/sdcgzah5ya
 int curveJoystick(bool red, int input, double t){ 
   int val = 0;
-  if(red){ // Red curve - Less sensitive in the range 20-70, but more sensitive when controller input is > 80.
+
+  // less sensitive at 20-70, more sensitive when controller input is > 80
+  if(red){ 
     val = (std::exp(t/10)+std::exp((std::abs(input)-100)/10)*(1-std::exp(-t/10))) * input; 
-  }
-  else { // Allows
-    // Blue Curve - More sensitive in the mid ranges 20-80, but a more gradual incline as controller input reaches max.
+  } else {
+
+    // more sensitive at 20-80, more gradual incline as controller input reaches max
     val = std::exp(((std::abs(input)-100)*20)/1000) * input;
   }
   return val;
 }
 
-
-/*---------------------------------------------------------------------------*/
-/*                 Proportional - Integral - Derivative Function             */
-/*---------------------------------------------------------------------------*/
-
-// A Proportional Integral Derivative Function - PID for short - uses values about the positions of the motors in a drivetrain.
-// A PID that is fine tuned for a specific build of robot is highly useful as it allows for precise movements that autocorrect if need be.
-// PIDs are broken up into 3 math terms that are explained further below.
-
-//////////////////////////
-// Prerequisites /////////
-//////////////////////////
-
-// This function resets the positional values for each motor to 0.
-// This is referenced at the beginning of the autonoumous function before the PID is initialized.
-// The function is needed so that the error does not get offsetted by a previous momvement, which could lead to inaccuracy.
+// resets all motors to 0 degrees
 void resetMotorValues() {
   leftBackMotor.setPosition(0, degrees);
   leftFrontMotor.setPosition(0, degrees);
@@ -113,44 +66,31 @@ void resetMotorValues() {
   rightFrontMotor.setPosition(0, degrees); 
 }
 
-// This boolean is to check whether the PID should be ran or not. 
-// In user control, it should be false - which disables the PID - so as to not interfere with the controller inputs.
+// configuration for PID
 bool enablePID = false;
-
-// Initializes the distance that we want the robot to travel. It is a double for more precise values.
-// This distance is measured in a motor's encoder ticks, but we reference the disToTheta function from before to convert it to inches.
 double desiredDistance = 0;
 
-
-// This is an object of the PID class found in PIDController.h
-// The 3 values are the tuning values of kP, kI, and KD.
+// create PID controller
 PIDController motorController(0.2, 0, 0);
 
-int drivePID() {
-
-  // run pid loop
+// driving PID
+void drivePID() {
   while (enablePID) {
  
-    // Retrieves the position of the motors in degrees
-    double leftFrontMotorPos = leftFrontMotor.position(degrees);
-    double leftBackMotorPos = leftBackMotor.position(degrees);
-    double rightFrontMotorPos = rightFrontMotor.position(degrees);
-    double rightBackMotorPos = rightBackMotor.position(degrees);
-
     // average motor positions
-    double motorAverage = (leftFrontMotorPos + leftBackMotorPos + rightFrontMotorPos + rightBackMotorPos) / 4;
-
+    double motorAverage = (leftFrontMotor.position(degrees) + leftBackMotor.position(degrees) + 
+    rightFrontMotor.position(degrees) + rightBackMotor.position(degrees)) / 4;
+                        
     // calculate PIDs
     double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
-    std::cout << "avg: " << motorAverage << " ";
-    std::cout << "err: " << motorController.error << std::endl;
+
     // send spin command
     LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     
+    // overload prevention
     vex::task::sleep(7); 
-  } 
-  return 1; 
+  }
 }
 
 
@@ -274,14 +214,14 @@ void pre_auton(void) {
 void autonomous(void) {
   resetMotorValues();
   enablePID = true;
-  vex::task autonomousPD (drivePID);
+  vex::task autonomousPD(drivePID);
   catapultMotor.spinFor(forward, 0.6, seconds);
   wait(0.3, seconds);
   resetMotorValues();
-  desiredDistance = DisToTheta(45);
+  desiredDistance = distanceToTheta(45);
   waitUntil(motorController.error < 10);
   resetMotorValues();
-  desiredDistance = (-1)*DisToTheta(20);
+  desiredDistance = (-1)*distanceToTheta(20);
   resetMotorValues();
 
   // targetDistance = distanceToTheta(18);
@@ -297,8 +237,10 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+
   // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
   enablePID = false;
+
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
   thread limitSwitchMotorsThread = thread(limitSwitchMotor); // DOES NOT USE LIMIT SWITCH NEED TO CHANGE
@@ -309,8 +251,9 @@ void usercontrol(void) {
   }
 }
 
-
+// program main call
 int main() {
+
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
@@ -318,6 +261,7 @@ int main() {
   // Runs the pre-autonomous function.
   pre_auton();
 
+  // maintains the program running
   while (true) {
     wait(100, msec);
   }
