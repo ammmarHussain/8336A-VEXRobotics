@@ -14,10 +14,12 @@ motor leftBackMotor = motor(PORT12, ratio18_1, true);
 motor rightBackMotor = motor(PORT16, ratio18_1, false);
 motor rightFrontMotor = motor(PORT17, ratio18_1, false);
 
+motor catapultMotor = motor(PORT10, ratio6_1, false);
+limit cataLimit = limit(Brain.ThreeWirePort.B);
+
 inertial DrivetrainInertial = inertial(PORT19);
 
-
-
+digital_out pneuCylinders = digital_out(Brain.ThreeWirePort.A);
 
 motor_group LeftDriveSmart = motor_group(leftBackMotor,leftFrontMotor);
 motor_group RightDriveSmart = motor_group(rightBackMotor, rightFrontMotor);

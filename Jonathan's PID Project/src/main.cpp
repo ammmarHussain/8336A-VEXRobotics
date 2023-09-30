@@ -43,7 +43,10 @@ extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
 extern drivetrain Drivetrain;
 
+extern motor catapultMotor;
+extern limit cataLimit;
 
+extern digital_out pneuCylinders;
 
 /*---------------------------------------------------------------------------*/
 /*                  Converting Motor Encoder Ticks to Inches                 */
@@ -145,8 +148,6 @@ int drivePID() {
     LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     RightDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
     
-
-    vex::task::sleep(20); 
     vex::task::sleep(7); 
   } 
   return 1; 
@@ -189,6 +190,50 @@ int joystickThreadCallback() {
   return 0;
 }
 
+bool pneumaticsActive = false;
+
+
+void pneumaticsControlCallback() {
+  while (true) {
+    if (Controller1.ButtonL2.pressing() && pneumaticsActive) {
+      pneumaticsActive = false;
+      pneuCylinders.set(false);
+      this_thread::sleep_for(1000);
+    }
+    else if (Controller1.ButtonL2.pressing()) {
+      pneumaticsActive = true;
+      pneuCylinders.set(true);
+      this_thread::sleep_for(1000);
+    }
+    this_thread::sleep_for(20);
+  }
+}
+
+
+void limitSwitchMotor() {
+
+  while (true) {
+
+    
+    if (cataLimit.pressing()) {
+      catapultMotor.stop();
+
+      if (Controller1.ButtonR2.pressing()) {
+        catapultMotor.spin(forward);
+        this_thread::sleep_for(500);
+      }
+    } else {
+      catapultMotor.spin(forward);
+    }
+    this_thread::sleep_for(20);
+  }
+}
+
+
+
+
+
+
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*---------------------------------------------------------------------------*/
@@ -199,6 +244,11 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
+  catapultMotor.setStopping(hold);
+  catapultMotor.setVelocity(100, percent);
+  Drivetrain.setDriveVelocity(100, percent);
+
+  pneuCylinders.set(false);
 
   Brain.Screen.drawImageFromFile("smartness.png", 0, 0);
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
@@ -213,7 +263,9 @@ void autonomous(void) {
   enablePID = true;
   vex::task autonomousPD (drivePID);
   resetMotorValues();
-  desiredDistance = DisToTheta(48);
+
+
+  desiredDistance = DisToTheta(24);
   waitUntil(motorController.error< 0.5 && motorController.error > 0);
   resetMotorValues();
   desiredDistance = DisToTheta(-24);
@@ -233,6 +285,8 @@ void usercontrol(void) {
   // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
   enablePID = false;
   // Sets up the multithreading in a while loop that runs forever.
+  thread toggleCylinders = thread(pneumaticsControlCallback);
+  thread limitSwitchMotorsThread = thread(limitSwitchMotor);
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
     vex::task::sleep(20);
