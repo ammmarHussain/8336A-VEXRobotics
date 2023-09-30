@@ -124,7 +124,7 @@ double desiredDistance = 0;
 
 // This is an object of the PID class found in PIDController.h
 // The 3 values are the tuning values of kP, kI, and KD.
-PIDController motorController(0.4, 0, 0);
+PIDController motorController(0.2, 0, 0);
 
 int drivePID() {
 
@@ -152,6 +152,8 @@ int drivePID() {
   } 
   return 1; 
 }
+
+
 
 
 /*---------------------------------------------------------------------------*/
@@ -210,21 +212,32 @@ void pneumaticsControlCallback() {
 }
 
 
+
+bool cataMotorSpin = true;
 void limitSwitchMotor() {
 
   while (true) {
 
-    
-    if (cataLimit.pressing()) {
-      catapultMotor.stop();
-
-      if (Controller1.ButtonR2.pressing()) {
-        catapultMotor.spin(forward);
-        this_thread::sleep_for(500);
-      }
-    } else {
+    if (cataMotorSpin) {
       catapultMotor.spin(forward);
+    } else {
+      catapultMotor.stop();
     }
+
+    if (Controller1.ButtonR2.pressing()) {
+      cataMotorSpin = !cataMotorSpin;
+      if (cataMotorSpin) {
+      catapultMotor.spin(forward);
+      } else {
+      catapultMotor.stop();
+      }
+      
+      this_thread::sleep_for(500);
+      
+    }
+
+    
+
     this_thread::sleep_for(20);
   }
 }
@@ -245,14 +258,13 @@ void pre_auton(void) {
   LeftDriveSmart.setStopping(brake);
   RightDriveSmart.setStopping(brake);
   catapultMotor.setStopping(hold);
-  catapultMotor.setVelocity(100, percent);
+  catapultMotor.setVelocity(65, percent);
   Drivetrain.setDriveVelocity(100, percent);
 
   pneuCylinders.set(false);
 
   Brain.Screen.drawImageFromFile("smartness.png", 0, 0);
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
-
 }
 
 /*---------------------------------------------------------------------------*/
@@ -260,15 +272,18 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  resetMotorValues();
   enablePID = true;
   vex::task autonomousPD (drivePID);
+  catapultMotor.spinFor(forward, 0.6, seconds);
+  wait(0.3, seconds);
+  resetMotorValues();
+  desiredDistance = DisToTheta(45);
+  waitUntil(motorController.error < 10);
+  resetMotorValues();
+  desiredDistance = (-1)*DisToTheta(20);
   resetMotorValues();
 
-
-  desiredDistance = DisToTheta(24);
-  waitUntil(motorController.error< 0.5 && motorController.error > 0);
-  resetMotorValues();
-  desiredDistance = DisToTheta(-24);
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
   // resetMotorValues();
@@ -286,7 +301,7 @@ void usercontrol(void) {
   enablePID = false;
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
-  thread limitSwitchMotorsThread = thread(limitSwitchMotor);
+  thread limitSwitchMotorsThread = thread(limitSwitchMotor); // DOES NOT USE LIMIT SWITCH NEED TO CHANGE
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
     vex::task::sleep(20);
