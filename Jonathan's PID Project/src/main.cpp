@@ -26,6 +26,9 @@ extern drivetrain Drivetrain;
 extern limit cataLimit;
 extern digital_out pneuCylinders;
 
+// inertial sensor
+extern inertial DrivetrainInertial;
+
 // converts distance to rotations
 int distanceToTheta (int distance){
   double gearRatio = 1.6666666666666666666666666666666666666666666667;
@@ -68,12 +71,12 @@ void resetMotorValues() {
 
 // configuration for PID
 bool enablePID = false;
+bool enableTurnPID = false;
 double desiredDistance = 0;
-
-// create PID controller
-PIDController motorController(0.2, 0, 0);
+double desiredTurn = 0;
 
 // driving PID
+PIDController straightPID(0.2, 0, 0);
 int drivePID() {
   while (enablePID) {
  
@@ -82,7 +85,7 @@ int drivePID() {
     rightFrontMotor.position(degrees) + rightBackMotor.position(degrees)) / 4;
                         
     // calculate PIDs
-    double PIDOutputMotors = motorController.calculatePIDOutput(desiredDistance, motorAverage);
+    double PIDOutputMotors = straightPID.calculatePIDOutput(desiredDistance, motorAverage);
 
     // send spin command
     LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
@@ -94,7 +97,22 @@ int drivePID() {
   return 1;
 }
 
+// turning PID
+PIDController turnPID(0,0,0);
+int turningPID() {
+  while (enableTurnPID) {
+    
+    double turnVal = DrivetrainInertial.heading(degrees);
 
+    double PIDOutputMotors = turnPID.calculatePIDOutput(desiredTurn, turnVal);
+
+    LeftDriveSmart.spin(directionType::fwd, PIDOutputMotors, voltageUnits::volt);
+    RightDriveSmart.spin(directionType::rev, PIDOutputMotors, voltageUnits::volt);
+
+    vex::task::sleep(7);
+  }
+  return 1;
+}
 
 
 /*---------------------------------------------------------------------------*/
@@ -184,27 +202,21 @@ void limitSwitchMotor() {
 }
 
 
-
-
-
-
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
   vexcodeInit();
-
   Drivetrain.setStopping(brake);
-  LeftDriveSmart.setStopping(brake);
-  RightDriveSmart.setStopping(brake);
   catapultMotor.setStopping(hold);
+  DrivetrainInertial.calibrate();
+
   catapultMotor.setVelocity(65, percent);
   Drivetrain.setDriveVelocity(100, percent);
 
   pneuCylinders.set(false);
 
-  Brain.Screen.drawImageFromFile("smartness.png", 0, 0);
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 }
 
@@ -214,16 +226,22 @@ void pre_auton(void) {
 
 void autonomous(void) {
   resetMotorValues();
-  enablePID = true;
+  DrivetrainInertial.setHeading(0, deg);
+  
+  /*enablePID = true;
   vex::task autonomousPD (drivePID);
   catapultMotor.spinFor(forward, 0.6, seconds);
   wait(0.3, seconds);
   resetMotorValues();
   desiredDistance = distanceToTheta(45);
-  waitUntil(motorController.error < 10);
+  waitUntil(straightPID.error < 10);
   resetMotorValues();
   desiredDistance = (-1)*distanceToTheta(20);
   resetMotorValues();
+*/
+
+
+
 
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
