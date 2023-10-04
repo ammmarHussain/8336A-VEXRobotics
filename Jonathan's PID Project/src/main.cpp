@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-// configure program
+// configure program for competition
 using namespace vex;
 competition Competition;
 
@@ -74,7 +74,7 @@ double desiredDistance = 0;
 PIDController motorController(0.2, 0, 0);
 
 // driving PID
-void drivePID() {
+int drivePID() {
   while (enablePID) {
  
     // average motor positions
@@ -91,6 +91,7 @@ void drivePID() {
     // overload prevention
     vex::task::sleep(7); 
   }
+  return 1;
 }
 
 
@@ -214,7 +215,7 @@ void pre_auton(void) {
 void autonomous(void) {
   resetMotorValues();
   enablePID = true;
-  vex::task autonomousPD(drivePID);
+  vex::task autonomousPD (drivePID);
   catapultMotor.spinFor(forward, 0.6, seconds);
   wait(0.3, seconds);
   resetMotorValues();
