@@ -23,8 +23,9 @@ extern motor_group RightDriveSmart;
 extern drivetrain Drivetrain;
 
 // misc. definitions
-extern limit cataLimit;
-extern digital_out pneuCylinders;
+extern distance disSense;
+extern digital_out pneuCylinLeft;
+extern digital_out pneuCylinRight;
 
 // inertial sensor
 extern inertial DrivetrainInertial;
@@ -67,6 +68,7 @@ void resetMotorValues() {
   leftFrontMotor.setPosition(0, degrees);
   rightBackMotor.setPosition(0, degrees);
   rightFrontMotor.setPosition(0, degrees); 
+  DrivetrainInertial.setHeading(0, degrees);
 }
 
 // configuration for PID
@@ -98,7 +100,7 @@ int drivePID() {
 }
 
 // turning PID
-PIDController turnPID(0,0,0);
+PIDController turnPID(0.08, 0, 0);
 int turningPID() {
   while (enableTurnPID) {
     
@@ -158,12 +160,14 @@ void pneumaticsControlCallback() {
   while (true) {
     if (Controller1.ButtonL2.pressing() && pneumaticsActive) {
       pneumaticsActive = false;
-      pneuCylinders.set(false);
+      pneuCylinLeft.set(false);
+      pneuCylinRight.set(false);
       this_thread::sleep_for(1000);
     }
     else if (Controller1.ButtonL2.pressing()) {
       pneumaticsActive = true;
-      pneuCylinders.set(true);
+      pneuCylinLeft.set(false);
+      pneuCylinRight.set(false);      
       this_thread::sleep_for(1000);
     }
     this_thread::sleep_for(20);
@@ -179,7 +183,8 @@ void limitSwitchMotor() {
 
     if (cataMotorSpin) {
       catapultMotor.spin(forward);
-    } else {
+    } 
+    else {
       catapultMotor.stop();
     }
 
@@ -187,16 +192,12 @@ void limitSwitchMotor() {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
       catapultMotor.spin(forward);
-      } else {
+      } 
+      else {
       catapultMotor.stop();
       }
-      
-      this_thread::sleep_for(500);
-      
+      this_thread::sleep_for(500); 
     }
-
-    
-
     this_thread::sleep_for(20);
   }
 }
@@ -212,10 +213,12 @@ void pre_auton(void) {
   catapultMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
-  catapultMotor.setVelocity(65, percent);
+  catapultMotor.setVelocity(100, percent);
   Drivetrain.setDriveVelocity(100, percent);
 
-  pneuCylinders.set(false);
+  pneuCylinLeft.set(false);
+  pneuCylinRight.set(false);
+
 
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 }
@@ -225,21 +228,15 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  resetMotorValues();
-  DrivetrainInertial.setHeading(0, deg);
-  
-  /*enablePID = true;
+  enablePID = true;
+  enableTurnPID = false;
   vex::task autonomousPD (drivePID);
-  catapultMotor.spinFor(forward, 0.6, seconds);
-  wait(0.3, seconds);
   resetMotorValues();
   desiredDistance = distanceToTheta(45);
   waitUntil(straightPID.error < 10);
   resetMotorValues();
   desiredDistance = (-1)*distanceToTheta(20);
   resetMotorValues();
-*/
-
 
 
 
