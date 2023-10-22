@@ -217,6 +217,7 @@ void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
   catapultMotor.setStopping(hold);
+  cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
   catapultMotor.setVelocity(100, percent);
