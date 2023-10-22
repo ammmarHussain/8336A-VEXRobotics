@@ -14,6 +14,7 @@ extern motor leftFrontMotor;
 extern motor rightBackMotor;
 extern motor rightFrontMotor;
 
+
 extern motor catapultMotor;
 extern motor cataSecondMotor;
 
@@ -185,22 +186,18 @@ void limitSwitchMotor() {
 
     if (cataMotorSpin) {
       catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
     } 
     else {
       catapultMotor.stop();
-      cataSecondMotor.stop();
     }
 
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
       catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
       } 
       else {
       catapultMotor.stop();
-      cataSecondMotor.stop();
       }
       this_thread::sleep_for(500); 
     }
@@ -221,6 +218,7 @@ void pre_auton(void) {
 
   catapultMotor.setVelocity(100, percent);
   cataSecondMotor.setVelocity(100, percent);
+
   Drivetrain.setDriveVelocity(100, percent);
 
   pneuCylinLeft.set(false);
@@ -236,14 +234,8 @@ void pre_auton(void) {
 
 void autonomous(void) {
   enablePID = true;
-  enableTurnPID = false;
   vex::task autonomousPD (drivePID);
-  resetMotorValues();
-  desiredDistance = distanceToTheta(45);
-  waitUntil(straightPID.error < 10);
-  resetMotorValues();
-  desiredDistance = (-1)*distanceToTheta(20);
-  resetMotorValues();
+  catapultMotor.spin(forward);
 
 
 
