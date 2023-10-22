@@ -162,8 +162,8 @@ void pneumaticsControlCallback() {
   while (true) {
     if (Controller1.ButtonL2.pressing() && pneumaticsActive) {
       pneumaticsActive = false;
-      pneuCylinLeft.set(false);
-      pneuCylinRight.set(false);
+      pneuCylinLeft.set(true);
+      pneuCylinRight.set(true);
       this_thread::sleep_for(1000);
     }
     else if (Controller1.ButtonL2.pressing()) {
