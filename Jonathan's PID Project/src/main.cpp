@@ -155,7 +155,7 @@ int joystickThreadCallback() {
   return 0;
 }
 
-bool pneumaticsActive = false;
+bool pneumaticsActive = true;
 
 
 void pneumaticsControlCallback() {
@@ -178,11 +178,12 @@ void pneumaticsControlCallback() {
 
 
 
-bool cataMotorSpin = true;
-void limitSwitchMotor() {
+bool cataMotorSpin = false;
+void toggleCatapult() {
 
   while (true) {
-
+    // catapultMotor.setVelocity(100, pct);
+    // cataSecondMotor.setVelocity(100, pct);
     if (cataMotorSpin) {
       catapultMotor.spin(forward);
       cataSecondMotor.spin(forward);
@@ -208,6 +209,18 @@ void limitSwitchMotor() {
   }
 }
 
+/*void holdCatapult() { 
+  while(true) { 
+    if(Controller1.ButtonR1.pressing()) {
+      catapultMotor.setVelocity(100, pct);
+      cataSecondMotor.setVelocity(100, pct);
+      catapultMotor.spin(forward);
+      cataSecondMotor.spin(forward);
+    }
+  }
+  this_thread::sleep_for(5);
+}
+*/
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -220,9 +233,9 @@ void pre_auton(void) {
   cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
-  catapultMotor.setVelocity(100, percent);
-  cataSecondMotor.setVelocity(100, percent);
   Drivetrain.setDriveVelocity(100, percent);
+  catapultMotor.setVelocity(90, pct);
+  cataSecondMotor.setVelocity(90, pct);
 
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
@@ -267,7 +280,8 @@ void usercontrol(void) {
 
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
-  thread limitSwitchMotorsThread = thread(limitSwitchMotor); // DOES NOT USE LIMIT SWITCH NEED TO CHANGE
+  thread toggleCatapultThread = thread(toggleCatapult);
+ // thread holdCatapultThread = thread(holdCatapult);
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
     vex::task::sleep(20);

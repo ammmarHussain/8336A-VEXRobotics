@@ -15,7 +15,7 @@ motor rightBackMotor = motor(PORT16, ratio18_1, false);
 motor rightFrontMotor = motor(PORT17, ratio18_1, false);
 
 motor catapultMotor = motor(PORT10, ratio36_1, false);
-motor cataSecondMotor = motor(PORT11, ratio36_1, true);
+motor cataSecondMotor = motor(PORT13, ratio36_1, true);
 distance disSense = distance(PORT5);
 
 inertial DrivetrainInertial = inertial(PORT19);

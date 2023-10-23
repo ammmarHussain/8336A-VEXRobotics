@@ -35,7 +35,7 @@ extern inertial DrivetrainInertial;
 
 // converts distance to rotations
 int distanceToTheta (int distance){
-  double gearRatio = 1.6666666666666666666666666666666666666666666667;
+  double gearRatio = (1.67);
   double wheelDiameter = 4.25;
   double wheelCircumference = wheelDiameter * M_PI;
   double theta = (distance*360) / (wheelCircumference *gearRatio);
@@ -156,7 +156,7 @@ int joystickThreadCallback() {
   return 0;
 }
 
-bool pneumaticsActive = false;
+bool pneumaticsActive = true;
 
 
 void pneumaticsControlCallback() {
@@ -179,25 +179,29 @@ void pneumaticsControlCallback() {
 
 
 
-bool cataMotorSpin = true;
+bool cataMotorSpin = false;
 void limitSwitchMotor() {
 
   while (true) {
 
     if (cataMotorSpin) {
       catapultMotor.spin(forward);
+      cataSecondMotor.spin(forward);
     } 
     else {
       catapultMotor.stop();
+      cataSecondMotor.stop();
     }
 
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
       catapultMotor.spin(forward);
+      cataSecondMotor.spin(forward);
       } 
       else {
       catapultMotor.stop();
+      cataSecondMotor.stop();
       }
       this_thread::sleep_for(500); 
     }
@@ -214,10 +218,11 @@ void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
   catapultMotor.setStopping(hold);
+  cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
-  catapultMotor.setVelocity(100, percent);
-  cataSecondMotor.setVelocity(100, percent);
+  catapultMotor.setVelocity(90, percent);
+  cataSecondMotor.setVelocity(90, percent);
 
   Drivetrain.setDriveVelocity(100, percent);
 
@@ -233,11 +238,24 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+
+  /*resetMotorValues();
+  vex::task straightLine (drivePID);
+  resetMotorValues();()
   enablePID = true;
-  vex::task autonomousPD (drivePID);
+  resetMotorValues();
+  desiredDistance = distanceToTheta(10);
+  waitUntil(straightPID.error < 20);
+  resetMotorValues();
+ desiredDistance = (-1)*distanceToTheta(20);
+  waitUntil(straightPID.error < 10);
+  resetMotorValues();
+ desiredDistance = distanceToTheta(20);
+  
+*/
   catapultMotor.spin(forward);
-
-
+  cataSecondMotor.spin(forward);
+  
 
   // targetDistance = distanceToTheta(18);
   // waitUntil(error == 0);
@@ -255,6 +273,7 @@ void usercontrol(void) {
 
   // Disables the PID function for user control so it does not interfere with controlling the drivetrain.
   enablePID = false;
+  enableTurnPID = false;
 
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
