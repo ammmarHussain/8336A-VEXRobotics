@@ -34,7 +34,7 @@ extern inertial DrivetrainInertial;
 
 // converts distance to rotations
 int distanceToTheta (int distance){
-  double gearRatio = 1.6666666666666666666666666666666666666666666667;
+  double gearRatio = 1.67;
   double wheelDiameter = 4.25;
   double wheelCircumference = wheelDiameter * M_PI;
   double theta = (distance*360) / (wheelCircumference *gearRatio);
@@ -229,13 +229,13 @@ void toggleCatapult() {
 void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
-  catapultMotor.setStopping(hold);
-  cataSecondMotor.setStopping(hold);
+  //catapultMotor.setStopping(hold);
+  //cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
   Drivetrain.setDriveVelocity(100, percent);
-  catapultMotor.setVelocity(90, pct);
-  cataSecondMotor.setVelocity(90, pct);
+  catapultMotor.setVelocity(100, pct);
+  cataSecondMotor.setVelocity(100, pct);
 
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
@@ -253,12 +253,12 @@ void autonomous(void) {
   enableTurnPID = false;
   vex::task autonomousPD (drivePID);
   resetMotorValues();
-  desiredDistance = distanceToTheta(45);
-  waitUntil(straightPID.error < 10);
+  desiredDistance = distanceToTheta(48);
+  /*waitUntil(straightPID.error < 10);
   resetMotorValues();
   desiredDistance = (-1)*distanceToTheta(20);
   resetMotorValues();
-
+  */
 
 
   // targetDistance = distanceToTheta(18);
