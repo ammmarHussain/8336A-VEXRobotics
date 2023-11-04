@@ -16,6 +16,7 @@ extern motor rightFrontMotor;
 
 extern motor catapultMotor;
 extern motor cataSecondMotor;
+extern motor_group catapult;
 
 // motor groups for left and right
 extern motor_group LeftDriveSmart;
@@ -155,8 +156,8 @@ int joystickThreadCallback() {
   return 0;
 }
 
-bool pneumaticsActive = true;
 
+bool pneumaticsActive = true;
 
 void pneumaticsControlCallback() {
   while (true) {
@@ -177,33 +178,39 @@ void pneumaticsControlCallback() {
 }
 
 
-
 bool cataMotorSpin = false;
+
+
 void toggleCatapult() {
 
   while (true) {
     // catapultMotor.setVelocity(100, pct);
     // cataSecondMotor.setVelocity(100, pct);
     if (cataMotorSpin) {
-      catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
+      catapult.spin(forward);
     } 
     else {
-      catapultMotor.stop();
-      cataSecondMotor.stop();
+      while (disSense.objectDistance(mm) >=  50) {
+        catapult.spin(forward);
+         
+      }
+      catapult.stop();
+      
     }
 
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
-      catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
+      catapult.spin(forward);
       } 
       else {
-      catapultMotor.stop();
-      cataSecondMotor.stop();
+      while (disSense.objectDistance(mm) >=  50) {
+        catapult.spin(forward);
+        
       }
-      this_thread::sleep_for(500); 
+      catapult.stop();
+      }
+      this_thread::sleep_for(200); 
     }
     this_thread::sleep_for(20);
   }
@@ -229,13 +236,13 @@ void toggleCatapult() {
 void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
-  //catapultMotor.setStopping(hold);
-  //cataSecondMotor.setStopping(hold);
+  catapultMotor.setStopping(hold);
+  cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
   Drivetrain.setDriveVelocity(100, percent);
-  catapultMotor.setVelocity(100, pct);
-  cataSecondMotor.setVelocity(100, pct);
+  catapult.setVelocity(100, percent);
+  catapult.setStopping(hold);
 
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
@@ -281,9 +288,11 @@ void usercontrol(void) {
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
   thread toggleCatapultThread = thread(toggleCatapult);
+
  // thread holdCatapultThread = thread(holdCatapult);
   while(1){
     thread joystickCurve = thread(joystickThreadCallback);
+      std::cout <<disSense.objectDistance(mm) << std::endl;
     vex::task::sleep(20);
   wait(20, msec);
   }
