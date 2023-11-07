@@ -103,7 +103,7 @@ int drivePID() {
 }
 
 // turning PID
-PIDController turnPID(0.08, 0, 0);
+PIDController turnPID(0.14, 0, 0.02);
 int turningPID() {
   while (enableTurnPID) {
     
@@ -221,8 +221,8 @@ void pre_auton(void) {
   cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
-  catapultMotor.setVelocity(90, percent);
-  cataSecondMotor.setVelocity(90, percent);
+  catapultMotor.setVelocity(100, percent);
+  cataSecondMotor.setVelocity(100, percent);
 
   Drivetrain.setDriveVelocity(100, percent);
 
@@ -239,10 +239,16 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-  /*resetMotorValues();
-  vex::task straightLine (drivePID);
-  resetMotorValues();()
-  enablePID = true;
+
+ /*while( DrivetrainInertial.isCalibrating() ) // make sure robot doesn't move
+  { wait(10,msec); }
+  resetMotorValues();
+  vex::task turns (turningPID);
+  enableTurnPID = true;
+  desiredTurn = 45;
+  */
+  /*
+
   resetMotorValues();
   desiredDistance = distanceToTheta(10);
   waitUntil(straightPID.error < 20);
@@ -251,8 +257,7 @@ void autonomous(void) {
   waitUntil(straightPID.error < 10);
   resetMotorValues();
  desiredDistance = distanceToTheta(20);
-  
-*/
+  */
   catapultMotor.spin(forward);
   cataSecondMotor.spin(forward);
   

@@ -123,7 +123,7 @@ int turningPID() {
 /*---------------------------------------------------------------------------*/
 /*                     Creating threads for Multithreading                   */
 /*---------------------------------------------------------------------------*/
-
+ 
 // Threads are functions that allow the program and hardware to "split" its resources running.
 // Essentially, while typical loops do not allow for other loops to take place until it is done,
 // threads will allow you to run multiple functions in a loop simoultaenously.
@@ -180,18 +180,14 @@ void pneumaticsControlCallback() {
 
 bool cataMotorSpin = false;
 
-
 void toggleCatapult() {
-
   while (true) {
-    // catapultMotor.setVelocity(100, pct);
-    // cataSecondMotor.setVelocity(100, pct);
     if (cataMotorSpin) {
       catapult.spin(forward);
     } 
     else {
-      while (disSense.objectDistance(mm) >=  50) {
-        catapult.spin(forward);
+      while (disSense.objectDistance(mm) >=  80) {
+      catapult.spin(forward);
          
       }
       catapult.stop();
@@ -204,8 +200,8 @@ void toggleCatapult() {
       catapult.spin(forward);
       } 
       else {
-      while (disSense.objectDistance(mm) >=  50) {
-        catapult.spin(forward);
+      //while (disSense.objectDistance(mm) >=  80) {
+        //catapult.spin(forward);
         
       }
       catapult.stop();
@@ -214,7 +210,7 @@ void toggleCatapult() {
     }
     this_thread::sleep_for(20);
   }
-}
+
 
 /*void holdCatapult() { 
   while(true) { 
@@ -236,13 +232,13 @@ void toggleCatapult() {
 void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
-  catapultMotor.setStopping(hold);
-  cataSecondMotor.setStopping(hold);
+  catapult.setStopping(brake);
+ 
   DrivetrainInertial.calibrate();
 
   Drivetrain.setDriveVelocity(100, percent);
   catapult.setVelocity(100, percent);
-  catapult.setStopping(hold);
+
 
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
