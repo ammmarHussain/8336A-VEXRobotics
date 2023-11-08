@@ -54,8 +54,8 @@ class PIDController {
 
         // stop movement and break out of pid if error is less than 1
         if (error < 1) {
-          motorA->stop(vex::brake);
-          motorB->stop(vex::brake);
+          motor_groupA->stop(vex::brake);
+          motor_groupB->stop(vex::brake);
           break;
         }
 
@@ -91,8 +91,8 @@ class PIDController {
 
         // stop movement and break out of pid if error is less than 1
         if (error < 1) {
-          motorA->stop(vex::brake);
-          motorB->stop(vex::brake);
+          motor_groupA->stop(vex::brake);
+          motor_groupB->stop(vex::brake);
           break;
         }
 

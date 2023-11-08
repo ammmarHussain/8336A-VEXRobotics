@@ -163,9 +163,12 @@ void pre_auton(void) {
 
 // autonomous code here
 void autonomous(void) {
+  while (DrivetrainInertial.isCalibrating()) {
+    wait(10,msec);
+  }
   resetMotorValues();
   PIDController PID(&leftFrontMotor, &leftBackMotor, &rightFrontMotor, &rightBackMotor, &LeftDriveSmart, &RightDriveSmart, &DrivetrainInertial);
-  PID.moveLateral(distanceToTheta(48), 0.2, 0.0, 0.0);
+  PID.moveLateral(distanceToTheta(48), 0.1, 0.0, 0.01);
   PID.rotate(90, 0.14, 0.00, 0.02);
 }
 
