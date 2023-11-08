@@ -165,9 +165,8 @@ void pre_auton(void) {
 void autonomous(void) {
   resetMotorValues();
   PIDController PID(&leftFrontMotor, &leftBackMotor, &rightFrontMotor, &rightBackMotor, &LeftDriveSmart, &RightDriveSmart, &DrivetrainInertial);
-  double desiredDistance = distanceToTheta(48);
-  PID.moveLateral(desiredDistance, 0.00, 0.00, 1.00);
-  PID.rotate(90, 0.00, 0.00, 0.00);
+  PID.moveLateral(distanceToTheta(48), 0.2, 0.0, 0.0);
+  PID.rotate(90, 0.14, 0.00, 0.02);
 }
 
 // user control code here
