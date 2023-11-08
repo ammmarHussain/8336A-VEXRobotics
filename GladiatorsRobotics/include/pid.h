@@ -29,9 +29,8 @@ class PIDController {
     void moveLateral(double targetValue, double proportionalGain, double integralGain, double derivativeGain) {
 
       // establish accumulative variables
-      double integral;
-      double lastError;
-      double derivative;
+      double integral = 0.0;
+      double lastError = 0.0;
 
       // repeat until target is reached
       while (true) {
@@ -43,7 +42,7 @@ class PIDController {
         // get error margin
         double error = targetValue - motorAveragePosition;
         integral += error;
-        derivative = error - lastError;
+        double derivative = error - lastError;
         lastError = error;
 
         // output value
@@ -68,9 +67,8 @@ class PIDController {
     void rotate(double targetValue, double proportionalGain, double integralGain, double derivativeGain) {
 
       // establish accumulative variables
-      double integral;
-      double lastError;
-      double derivative;
+      double integral = 0.0;
+      double lastError = 0.0;
       
       // repeat until target is reached
       while (true) {
@@ -81,7 +79,7 @@ class PIDController {
         // get error margin
         double error = targetValue - currentRotation;
         integral += error;
-        derivative = error - lastError;
+        double derivative = error - lastError;
         lastError = error;
 
         // output value
