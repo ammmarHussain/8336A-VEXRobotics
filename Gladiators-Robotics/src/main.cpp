@@ -67,11 +67,12 @@ void joystickThreadCallback() {
   }
 }
 
+// initial state of pneumatics
+bool pneumaticsActive = true;
+
 // pneumatics control code
 void pneumaticsControlCallback() {
 
-  // initial state of pneumatics
-  bool pneumaticsActive = true;
   while (true) {
 
     // toggles pneumaticsActive variable and opens pneumatics
@@ -107,7 +108,10 @@ void toggleCatapult() {
     else {
       
       // run catapult until distance < 80mm
-      while (disSense.objectDistance(mm) >=  80) {
+      while (disSense.objectDistance(mm) >=  100 ) {
+        if (disSense.objectDistance(mm) == 9999) {
+          catapult.stop();
+        }
         catapult.spin(forward);
       }
       catapult.stop();
@@ -148,9 +152,15 @@ void holdCatapult() {
 // pre-autonomous code; other words for robot before-start settings!
 void pre_auton(void) {
 
+  while (DrivetrainInertial.isCalibrating()) {
+    wait(10,msec);
+  }
+
   // configure & setup initial startup elements
   Drivetrain.setStopping(brake);
-  catapult.setStopping(brake);
+  catapult.setStopping(hold);
+  catapultMotor.setStopping(hold);
+  cataSecondMotor.setStopping(hold);  
   DrivetrainInertial.calibrate();
   Drivetrain.setDriveVelocity(100, percent);
   catapult.setVelocity(100, percent);
@@ -163,13 +173,16 @@ void pre_auton(void) {
 
 // autonomous code here
 void autonomous(void) {
+  resetMotorValues();
+  pneumaticsActive = false;
   while (DrivetrainInertial.isCalibrating()) {
     wait(10,msec);
   }
   resetMotorValues();
   PIDController PID(&leftFrontMotor, &leftBackMotor, &rightFrontMotor, &rightBackMotor, &LeftDriveSmart, &RightDriveSmart, &DrivetrainInertial);
-  PID.moveLateral(distanceToTheta(48), 0.1, 0.0, 0.01);
-  PID.rotate(90, 0.14, 0.00, 0.02);
+ // PID.moveLateral(distanceToTheta(48), 0.05, 0.0, 0.001);
+  resetMotorValues();
+   PID.rotate(1000, 0.14, 0.00, 0.02);
 }
 
 // user control code here
@@ -182,6 +195,7 @@ void usercontrol(void) {
 
   // ensure program stays in user control
   while(true) {
+    //std::cout << disSense.objectDistance(mm) << std::endl;
     wait(20, msec);
   }
 }
