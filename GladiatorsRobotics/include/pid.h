@@ -28,13 +28,13 @@ class PIDController {
     // pid movement to go forward
     void moveLateral(double targetValue, double proportionalGain, double integralGain, double derivativeGain) {
 
+      // establish accumulative variables
+      double integral;
+      double lastError;
+      double derivative;
+
       // repeat until target is reached
       while (true) {
-
-        // establish accumulative variables
-        double integral;
-        double lastError;
-        double derivative;
 
         // get average motor positions
         double motorAveragePosition = (motorA->position(vex::degrees) + motorB->position(vex::degrees) + 
@@ -66,14 +66,14 @@ class PIDController {
     }
 
     void rotate(double targetValue, double proportionalGain, double integralGain, double derivativeGain) {
+
+      // establish accumulative variables
+      double integral;
+      double lastError;
+      double derivative;
       
       // repeat until target is reached
       while (true) {
-
-        // establish accumulative variables
-        double integral;
-        double lastError;
-        double derivative;
 
         // get average motor positions
         double currentRotation = drivetrain_intertial->heading(vex::degrees);
