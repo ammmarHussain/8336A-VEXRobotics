@@ -241,7 +241,7 @@ void autonomous(void) {
 
 
  /*while( DrivetrainInertial.isCalibrating() ) // make sure robot doesn't move
-  { wait(10,msec); }
+  { wai 
   resetMotorValues();
   vex::task turns (turningPID);
   enableTurnPID = true;

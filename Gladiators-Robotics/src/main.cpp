@@ -107,9 +107,9 @@ void toggleCatapult() {
     else {
       
       // run catapult until distance < 80mm
-      while (disSense.objectDistance(mm) >=  80) {
-        catapult.spin(forward);
-      }
+      //while (disSense.objectDistance(mm) >=  80) {
+       // catapult.spin(forward);
+      //}
       catapult.stop();
     }
 
@@ -125,7 +125,7 @@ void toggleCatapult() {
       }
       catapult.stop();
     }
-    this_thread::sleep_for(200); 
+    this_thread::sleep_for(20); 
   }
   this_thread::sleep_for(20);
 }
@@ -150,8 +150,7 @@ void pre_auton(void) {
 
   // configure & setup initial startup elements
   Drivetrain.setStopping(brake);
-  catapult.setStopping(brake);
-  DrivetrainInertial.calibrate();
+ // catapult.setStopping(brake);
   Drivetrain.setDriveVelocity(100, percent);
   catapult.setVelocity(100, percent);
   pneuCylinLeft.set(false);
@@ -163,22 +162,32 @@ void pre_auton(void) {
 
 // autonomous code here
 void autonomous(void) {
-  while (DrivetrainInertial.isCalibrating()) {
-    wait(10,msec);
-  }
   resetMotorValues();
   PIDController PID(&leftFrontMotor, &leftBackMotor, &rightFrontMotor, &rightBackMotor, &LeftDriveSmart, &RightDriveSmart, &DrivetrainInertial);
-  PID.moveLateral(distanceToTheta(48), 0.1, 0.0, 0.01);
-  PID.rotate(90, 0.14, 0.00, 0.02);
+  // PID.moveLateral(distanceToTheta(48), 0.1, 0.0, 0.01);
+  PID.rotate(90, 0.04, 0.00, 0.02);
 }
 
 // user control code here
 void usercontrol(void) {
 
+
+
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
   thread toggleCatapultThread = thread(toggleCatapult);
   thread joystickCurve = thread(joystickThreadCallback);
+
+  while (1) {
+
+  if (Controller1.ButtonA.pressing() ) {
+    intake.spin(forward); }
+    else if (Controller1.ButtonY.pressing() ) {
+    intake.spin(reverse); }
+    else {
+      intake.stop();
+    }
+  }
 
   // ensure program stays in user control
   while(true) {
