@@ -102,7 +102,7 @@ void toggleCatapult() {
   bool cataMotorSpin = false;
   while (true) {
     if (cataMotorSpin) {
-      catapult.spin(forward);
+      catapult.spin(fwd, 12, voltageUnits::volt);
     } 
     else {
       
@@ -117,7 +117,7 @@ void toggleCatapult() {
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
-        catapult.spin(forward);
+        catapult.spin(fwd, 12, voltageUnits::volt);
       } 
       else {
         //while (disSense.objectDistance(mm) >=  80) {
@@ -125,7 +125,7 @@ void toggleCatapult() {
       }
       catapult.stop();
     }
-    this_thread::sleep_for(20); 
+    this_thread::sleep_for(200); 
   }
   this_thread::sleep_for(20);
 }
@@ -152,7 +152,7 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
  // catapult.setStopping(brake);
   Drivetrain.setDriveVelocity(100, percent);
-  catapult.setVelocity(100, percent);
+  //catapult.setVelocity(100, percent);
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
 
@@ -181,9 +181,9 @@ void usercontrol(void) {
   while (1) {
 
   if (Controller1.ButtonA.pressing() ) {
-    intake.spin(forward); }
+    intake.spin(forward, 12, voltageUnits::volt); }
     else if (Controller1.ButtonY.pressing() ) {
-    intake.spin(reverse); }
+    intake.spin(reverse, 12, voltageUnits::volt); }
     else {
       intake.stop();
     }
