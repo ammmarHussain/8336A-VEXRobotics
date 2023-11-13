@@ -1,4 +1,5 @@
 #include "vex.h"
+#include <iostream>
 
 // create PID controller class
 class PIDController {
@@ -59,6 +60,8 @@ class PIDController {
           break;
         }
 
+         std::cout << error << std::endl;
+
         // prevent brain from dying
         vex::task::sleep(20);
       }
@@ -86,8 +89,8 @@ class PIDController {
         double outputValue = (proportionalGain * error + integralGain * integral + derivativeGain * derivative);
 
         // movement
-        motor_groupA->spin(vex::directionType::fwd, outputValue, vex::voltageUnits::volt);
-        motor_groupB->spin(vex::directionType::rev, outputValue, vex::voltageUnits::volt);
+        motor_groupA->spin(vex::directionType::rev, outputValue, vex::voltageUnits::volt);
+        motor_groupB->spin(vex::directionType::fwd, outputValue, vex::voltageUnits::volt);
 
         // stop movement and break out of pid if error is less than 1
         if (error < 1) {
@@ -96,6 +99,8 @@ class PIDController {
           break;
         }
 
+       
+        
         // prevent brain from dying
         vex::task::sleep(20);
       }
