@@ -86,7 +86,7 @@ Discarded input sections
  .ARM.exidx.text._Z14toggleCatapultv
                 0x00000000        0x8 build/src/main.o
  .text._Z12intakeTogglev
-                0x00000000       0x98 build/src/main.o
+                0x00000000       0xc4 build/src/main.o
  .ARM.exidx.text._Z12intakeTogglev
                 0x00000000        0x8 build/src/main.o
  .llvm_addrsig  0x00000000       0x15 build/src/main.o

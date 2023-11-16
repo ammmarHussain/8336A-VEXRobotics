@@ -93,13 +93,14 @@ thread intakeToggle() {
 
   // initial state of intake
   bool intakeSpin = false;
+  directionType intakeDirection = directionType::fwd;
   while (true) {
 
     // if A is pressed toggle spinning status
     if (Controller1.ButtonA.pressing()) {
       intakeSpin = !intakeSpin;
       if (intakeSpin) {
-        intake.spin(fwd, 12, voltageUnits::volt);
+        intake.spin(intakeDirection, 12, voltageUnits::volt);
       }
       else {
         catapult.stop();
@@ -107,6 +108,22 @@ thread intakeToggle() {
       
       // cooldown after toggle
       this_thread::sleep_for(200); 
+    }
+
+    // reverse direction of intake
+    else if (Controller1.ButtonY.pressing()) {
+      if (intakeDirection == directionType::fwd) {
+        intakeDirection = directionType::rev;
+      }
+      else {
+        intakeDirection = directionType::fwd;
+      }
+
+      // needed to update direction
+      intake.spin(intakeDirection, 12, voltageUnits::volt);
+
+      // cooldown after toggle
+      this_thread::sleep_for(200);
     }
 
     // prevent robot from dying
