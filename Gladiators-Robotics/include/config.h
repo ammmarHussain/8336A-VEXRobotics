@@ -1,8 +1,8 @@
+// prevent nesting
+#pragma once
+
 // include everything needed
 #include "vex.h"
-#include "pid.h"
-#include <cmath>
-#include <iostream>
 
 // namespace setup
 using namespace vex;
@@ -30,7 +30,6 @@ motor_group RightDriveSmart = motor_group(rightBackMotor, rightFrontMotor);
 motor_group catapult = motor_group(catapultMotor, cataSecondMotor);
 
 // misc definitions
-
 inertial DrivetrainInertial = inertial(PORT19);
 digital_out pneuCylinLeft = digital_out(Brain.ThreeWirePort.A);
 digital_out pneuCylinRight = digital_out(Brain.ThreeWirePort.B);
