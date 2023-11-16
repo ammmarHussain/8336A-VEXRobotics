@@ -152,6 +152,7 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
  // catapult.setStopping(brake);
   Drivetrain.setDriveVelocity(100, percent);
+  intake.setBrake(hold);
   //catapult.setVelocity(100, percent);
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
@@ -168,6 +169,8 @@ void autonomous(void) {
   PID.rotate(90, 0.04, 0.00, 0.02);
 }
 
+
+bool intakeSpin = false;
 // user control code here
 void usercontrol(void) {
 
@@ -180,14 +183,30 @@ void usercontrol(void) {
 
   while (1) {
 
-  if (Controller1.ButtonA.pressing() ) {
+  if (intakeSpin) {
     intake.spin(forward, 12, voltageUnits::volt); }
+  else {
+    catapult.stop(); 
+    }
+    
+  if (Controller1.ButtonA.pressing()) {
+    intakeSpin = !intakeSpin;
+    if (intakeSpin) {
+      intake.spin(fwd, 12, voltageUnits::volt);
+    }
+    else {
+      
+    }
+    catapult.stop();
+  }
+   /*
     else if (Controller1.ButtonY.pressing() ) {
     intake.spin(reverse, 12, voltageUnits::volt); }
     else {
       intake.stop();
     }
-  }
+    */
+     }
 
   // ensure program stays in user control
   while(true) {

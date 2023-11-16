@@ -17,6 +17,7 @@ extern motor rightFrontMotor;
 
 extern motor catapultMotor;
 extern motor cataSecondMotor;
+extern motor_group catapult;
 
 // motor groups for left and right
 extern motor_group LeftDriveSmart;
@@ -217,12 +218,8 @@ void limitSwitchMotor() {
 void pre_auton(void) {
   vexcodeInit();
   Drivetrain.setStopping(brake);
-  catapultMotor.setStopping(hold);
-  cataSecondMotor.setStopping(hold);
   DrivetrainInertial.calibrate();
 
-  catapultMotor.setVelocity(100, percent);
-  cataSecondMotor.setVelocity(100, percent);
 
   Drivetrain.setDriveVelocity(100, percent);
 
@@ -257,9 +254,8 @@ void autonomous(void) {
   waitUntil(straightPID.error < 10);
   resetMotorValues();
  desiredDistance = distanceToTheta(20);
-  */
-  catapultMotor.spin(forward);
-  cataSecondMotor.spin(forward);
+  */  
+ catapult.spin(forward, 12, voltageUnits::volt);
   
 
   // targetDistance = distanceToTheta(18);
