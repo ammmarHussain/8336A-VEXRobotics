@@ -75,19 +75,19 @@ void pneumaticsControlCallback() {
   while (true) {
 
     // toggles pneumaticsActive variable and opens pneumatics
-    if (Controller1.ButtonL2.pressing() && pneumaticsActive) {
+    if (Controller1.ButtonR1.pressing() && pneumaticsActive) {
       pneumaticsActive = false;
       pneuCylinLeft.set(true);
       pneuCylinRight.set(true);
-      this_thread::sleep_for(1000);
+      this_thread::sleep_for(200);
     }
 
     // toggles pneumaticsActive variable and closes pneumatics
-    else if (Controller1.ButtonL2.pressing()) {
+    else if (Controller1.ButtonR1.pressing()) {
       pneumaticsActive = true;
       pneuCylinLeft.set(false);
       pneuCylinRight.set(false);      
-      this_thread::sleep_for(1000);
+      this_thread::sleep_for(200);
     }
 
     // prevent robot from throttling
