@@ -1,8 +1,16 @@
 // import all configurations and libraries
-#include "config.h"
+#include "vex.h" 
+#include <iostream>
+#include "odometry.h"
+#include <stdio.h>
 
 // configure program for competition
 using namespace vex;
+
+odometry Test1;
+motor_group LeftDriveSmart (leftBackMotor, leftFrontMotor);
+motor_group RightDriveSmart (rightBackMotor, rightFrontMotor);
+drivetrain Drivetrain = drivetrain(LeftDriveSmart, RightDriveSmart, 320, 279.4, 279.4, mm, 1.67);
 competition Competition;
 
 // converts distance to rotations
@@ -29,11 +37,11 @@ int curveJoystick(bool red, int input, double t){
 
   // less sensitive at 20-70, more sensitive when controller input is > 80
   if(red){ 
-    val = (std::exp(t/10)+std::exp((std::abs(input)-100)/10)*(1-std::exp(-t/10))) * input; 
+    val = (exp(t/10)+exp((abs(input)-100)/10)*(1-exp(-t/10))) * input; 
   } else {
 
     // more sensitive at 20-80, more gradual incline as controller input reaches max
-    val = std::exp(((std::abs(input)-100)*20)/1000) * input;
+    val = exp(((abs(input)-100)*20)/1000) * input;
   }
   return val;
 }
@@ -117,7 +125,7 @@ void toggleCatapult() {
         catapult.stop();
       }
     }
-    this_thread::sleep_for(100);
+    this_thread::sleep_for(150);
   }
   this_thread::sleep_for(20);
 }
@@ -129,7 +137,7 @@ void intakeControl( ){
   while (true) {
 
     // if A is pressed toggle spinning status
-    if (Controller1.ButtonL2.pressing()) {
+    if (Controller1.ButtonL1.pressing()) {
       intakeSpin = !intakeSpin;
       if (intakeSpin) {
         intake.spin(intakeDirection);
@@ -143,7 +151,7 @@ void intakeControl( ){
     }
 
     // reverse direction of intake
-    else if (Controller1.ButtonL1.pressing()) {
+    else if (Controller1.ButtonL2.pressing()) {
       intakeSpin = !intakeSpin;
       if (intakeSpin) {
         intake.spin(reverse);
@@ -154,7 +162,7 @@ void intakeControl( ){
 
   
       // cooldown after toggle
-      this_thread::sleep_for(200);
+      this_thread::sleep_for(300);
     }
 
     // prevent robot from dying
@@ -163,12 +171,174 @@ void intakeControl( ){
 }
 
 
+int ForwardPID (double targetValue, double P, double I, double D, bool fwrd){
+double totalError = 0;
+double lastError = Test1.getRbtYPos();
+while(1){
+double currValue = Test1.getRbtYPos();
+double currError = targetValue - currValue;
+totalError += currError;
+double diffError = currError - lastError;
+
+double currVolt = currError*P + totalError*I + diffError*D;
+if(fwrd){
+LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+RightDriveSmart.spin(forward, currVolt, voltageUnits::volt); 
+}
+else{
+LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+}
+lastError = currError;
+printf( " Forward Current Error %f\n", currError );
+vex::task::sleep(20);
+
+if(currError < 0.8){
+LeftDriveSmart.stop(brake);
+RightDriveSmart.stop(brake);
+break;
+}
+}
+return 1;
+}
+
+
+int ReversePID (double targetValue, double P, double I, double D, bool fwrd){
+double totalError = 0;
+double lastError = Test1.getRevYPos();
+while(1){
+double currValue = Test1.getRevYPos();
+double currError = targetValue - currValue;
+totalError += currError;
+double diffError = currError - lastError;
+
+double currVolt = currError*P + totalError*I + diffError*D;
+if(fwrd){
+LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+}
+else{
+LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+RightDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+}
+lastError = currError;
+printf( " Reverse Current Error %f\n", currError );
+
+vex::task::sleep(20);
+
+if(currError < 3.5){
+LeftDriveSmart.stop(brake);
+RightDriveSmart.stop(brake);
+printf("DONE!");
+break;
+}
+}
+return 1;
+}
+
+
+int rightRotatingPID (double turnTargetValue, double tP, double tI, double tD){
+double turnTotalError = 0;
+double turnLastError = Test1.toDegrees( Test1.getPosition().h );
+//printf( " Current Value %f\n", lastError );
+while(1){
+double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
+double turnCurrError = turnTargetValue - turnCurrValue;
+turnTotalError += turnCurrError;
+double turnDiffError = turnCurrError - turnLastError;
+
+
+double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+
+LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
+RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+
+turnLastError = turnCurrError;
+
+vex::task::sleep(20);
+//Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+//printf( " PID volt %f\n", currVolt );
+printf( " Turn Current Error %f\n", turnCurrError );
+
+if(turnCurrError < 2){
+LeftDriveSmart.stop(brake);
+RightDriveSmart.stop(brake);
+
+break;
+}
+}
+return 1;
+}
+
+int leftRotatingPID (double turnTargetValue, double tP, double tI, double tD){
+double turnTotalError = 0;
+double turnLastError = Test1.toDegrees( Test1.getPosition().h );
+//printf( " Current Value %f\n", lastError );
+while(1){
+double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
+double turnCurrError = turnTargetValue - turnCurrValue;
+turnTotalError += turnCurrError;
+double turnDiffError = turnCurrError - turnLastError;
+
+double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+
+LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
+RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+
+turnLastError = turnCurrError;
+
+vex::task::sleep(20);
+//Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+//printf( " PID volt %f\n", currVolt );
+printf( " Turn Current Error %f\n", turnCurrError );
+
+if(turnCurrError < 2){
+LeftDriveSmart.stop(brake);
+RightDriveSmart.stop(brake);
+
+break;
+}
+}
+return 1;
+}
+int RotatingPID (double turnTargetValue, double tP, double tI, double tD){
+double turnTotalError = 0;
+double turnLastError = Test1.toDegrees( Test1.getPosition().h );
+//printf( " Current Value %f\n", lastError );
+while(1){
+double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
+double turnCurrError = turnTargetValue - turnCurrValue;
+turnTotalError += turnCurrError;
+double turnDiffError = turnCurrError - turnLastError;
+
+double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+
+LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
+RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+
+turnLastError = turnCurrError;
+
+vex::task::sleep(20);
+Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+//printf( " PID volt %f\n", currVolt );
+printf( " Turn Current Error %f\n", turnCurrError );
+
+if((turnCurrError) < 1){
+LeftDriveSmart.stop(brake);
+RightDriveSmart.stop(brake);
+printf("DONE!");
+break;
+}
+}
+return 1;
+}
+
 // pre-autonomous code; other words for robot before-start settings!
 void pre_auton(void) {
 
   // configure & setup initial startup elements
   Drivetrain.setStopping(brake);
- // catapult.setStopping(brake);
+ 
   Drivetrain.setDriveVelocity(100, percent);
   intake.setVelocity(100, percent);
   //catapult.setVelocity(100, percent);
@@ -179,12 +349,35 @@ void pre_auton(void) {
   Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 }
 
+
+
+void reversePIDThread() {
+  ReversePID(8, 1, 0.000, 0.3, true);
+  this_thread::sleep_for(10);
+}
+
+void reversePIDThread2() {
+  ReversePID(8, 0.3, 0.000, 0.0, true);
+  this_thread::sleep_for(10);
+}
+
 // autonomous code here
 void autonomous(void) {
-  resetMotorValues();
-  PIDController PID(&leftFrontMotor, &leftBackMotor, &rightFrontMotor, &rightBackMotor, &LeftDriveSmart, &RightDriveSmart, &DrivetrainInertial);
-  PID.moveLateral(distanceToTheta(48), 0.1, 0.0, 0.01);
-  
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  Test1 = odometry(DrivetrainInertial);
+  vex::thread([]() { 
+    while(1){
+      Test1.updateRobotPosition(); 
+      }
+    });
+  intake.spin(reverse);
+  ReversePID(8, 0.5, 0.000, 0.3, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ForwardPID(25, 0.2, 0.0, 0.1, true);
+
+
 }
 
 
@@ -199,33 +392,6 @@ void usercontrol(void) {
   thread toggleCatapultThread = thread(toggleCatapult);
   thread joystickCurve = thread(joystickThreadCallback);
   thread toggleIntake = thread(intakeControl);
-/*
-  while (1) {
-
-  if (intakeSpin) {
-    intake.spin(forward, 12, voltageUnits::volt); }
-  else {
-    catapult.stop(); 
-    }
-    
-  if (Controller1.ButtonA.pressing()) {
-    intakeSpin = !intakeSpin;
-    if (intakeSpin) {
-      intake.spin(fwd, 12, voltageUnits::volt);
-    }
-    else {
-      
-    }
-    catapult.stop();
-  }
-  */
-   /*
-    else if (Controller1.ButtonY.pressing() ) {
-    intake.spin(reverse, 12, voltageUnits::volt); }
-    else {
-      intake.stop();
-    }
-    */
     
 
   // ensure program stays in user control

@@ -186,8 +186,8 @@ void limitSwitchMotor() {
   while (true) {
 
     if (cataMotorSpin) {
-      catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
+      catapultMotor.spin(forward, 12, voltageUnits::volt);
+      cataSecondMotor.spin(forward, 12, voltageUnits::volt);
     } 
     else {
       catapultMotor.stop();
@@ -197,8 +197,8 @@ void limitSwitchMotor() {
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
-      catapultMotor.spin(forward);
-      cataSecondMotor.spin(forward);
+      catapultMotor.spin(forward, 12, voltageUnits::volt);
+      cataSecondMotor.spin(forward, 12, voltageUnits::volt);
       } 
       else {
       catapultMotor.stop();
