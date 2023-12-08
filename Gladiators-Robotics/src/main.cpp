@@ -193,7 +193,7 @@ lastError = currError;
 printf( " Forward Current Error %f\n", currError );
 vex::task::sleep(20);
 
-if(currError < 0.8){
+if(currError < 2.5){
 LeftDriveSmart.stop(brake);
 RightDriveSmart.stop(brake);
 break;
@@ -340,6 +340,7 @@ void pre_auton(void) {
   Drivetrain.setStopping(brake);
  
   Drivetrain.setDriveVelocity(100, percent);
+  Drivetrain.setTurnVelocity(100, percent);
   intake.setVelocity(100, percent);
   //catapult.setVelocity(100, percent);
   pneuCylinLeft.set(false);
@@ -352,7 +353,7 @@ void pre_auton(void) {
 
 
 void reversePIDThread() {
-  ReversePID(8, 1, 0.000, 0.3, true);
+  ReversePID(10, 1, 0.000, 0.3, true);
   this_thread::sleep_for(10);
 }
 
@@ -372,10 +373,44 @@ void autonomous(void) {
       }
     });
   intake.spin(reverse);
-  ReversePID(8, 0.5, 0.000, 0.3, true);
+  ReversePID(10, 0.7, 0.000, 0.3, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  ForwardPID(25, 0.2, 0.0, 0.1, true);
+  wait(1, seconds);
+  ForwardPID(30, 0.4, 0.000, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  // RotatingPID(270, 0.2, 0.0, 0.0);
+  Drivetrain.turnFor(-15, degrees, true);
+  // Drivetrain.turnFor(-5, degrees, true);
+  ForwardPID(12, 0.4, 0.0, 0.0, true);
+
+  Drivetrain.turnFor(-17, degrees, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ForwardPID(14, 0.4, 0.0, 0.0, true);
+  Drivetrain.turnFor(-12, degrees, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ReversePID(6, 0.5, 0.0, 0.0, true);
+  wait(0.5, seconds);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ForwardPID(20, 1, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ReversePID(6, 0.5, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ForwardPID(20, 1, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ReversePID(6, 0.5, 0.0, 0.0, true);
+  DrivetrainInertial.setHeading(0, degrees);
+  RotatingPID(37, 0.3, 0.0, 0.4);
+
+
+
 
 
 }
