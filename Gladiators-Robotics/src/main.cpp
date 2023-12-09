@@ -193,7 +193,7 @@ lastError = currError;
 printf( " Forward Current Error %f\n", currError );
 vex::task::sleep(20);
 
-if(currError < 2.5){
+if(currError < 3){
 LeftDriveSmart.stop(brake);
 RightDriveSmart.stop(brake);
 break;
@@ -342,6 +342,7 @@ void pre_auton(void) {
   Drivetrain.setDriveVelocity(100, percent);
   Drivetrain.setTurnVelocity(100, percent);
   intake.setVelocity(100, percent);
+  intake.setBrake(hold);
   //catapult.setVelocity(100, percent);
   pneuCylinLeft.set(false);
   pneuCylinRight.set(false);
@@ -374,22 +375,35 @@ void autonomous(void) {
     });
   intake.spin(reverse);
   ReversePID(10, 0.7, 0.000, 0.3, true);
+ 
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  wait(1, seconds);
-  ForwardPID(30, 0.4, 0.000, 0.0, true);
+  wait(0.5, seconds);
+   intake.stop();
+  ForwardPID(33, 0.4, 0.000, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   // RotatingPID(270, 0.2, 0.0, 0.0);
   Drivetrain.turnFor(-15, degrees, true);
   // Drivetrain.turnFor(-5, degrees, true);
-  ForwardPID(12, 0.4, 0.0, 0.0, true);
 
-  Drivetrain.turnFor(-17, degrees, true);
+  ForwardPID(8, 0.8, 0.0, 0.0, true);
+  pneuCylinRight.set(true);
+  Drivetrain.turnFor(-25, degrees, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  ForwardPID(14, 0.4, 0.0, 0.0, true);
-  Drivetrain.turnFor(-12, degrees, true);
+  wait(0.3, seconds);
+  //Drivetrain.turnFor(5, degrees, true);
+
+  ForwardPID(10, 1, 0.0, 0.0, true);
+     pneuCylinRight.set(false);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+
+  //ForwardPID(10, 0.6, 0.0, 0.0, true);
+
+  Drivetrain.turnFor(-6, degrees, true);
+
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   ReversePID(6, 0.5, 0.0, 0.0, true);
@@ -407,7 +421,23 @@ void autonomous(void) {
   RightDriveSmart.resetPosition();
   ReversePID(6, 0.5, 0.0, 0.0, true);
   DrivetrainInertial.setHeading(0, degrees);
-  RotatingPID(37, 0.3, 0.0, 0.4);
+  intake.spin(reverse);
+  RotatingPID(53, 0.3, 0.0, 0.0);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ForwardPID(4, 0.7, 0.0, 0.0, true);
+  intake.spin(forward);
+  wait(0.8, seconds);
+  RotatingPID(245, 0.3, 0.0, 0.0);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ReversePID(6, 1, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  wait(0.5, seconds);
+  ForwardPID(14, 2, 0.0, 0.0, true);
+  intake.stop();
+
 
 
 
