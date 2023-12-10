@@ -373,6 +373,7 @@ void autonomous(void) {
       Test1.updateRobotPosition(); 
       }
     });
+ 
   intake.spin(reverse);
   ReversePID(10, 0.7, 0.000, 0.3, true);
  
@@ -380,7 +381,7 @@ void autonomous(void) {
   RightDriveSmart.resetPosition();
   wait(0.5, seconds);
    intake.stop();
-  ForwardPID(33, 0.4, 0.000, 0.0, true);
+  ForwardPID(30, 0.4, 0.000, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   // RotatingPID(270, 0.2, 0.0, 0.0);
@@ -389,11 +390,11 @@ void autonomous(void) {
 
   ForwardPID(8, 0.8, 0.0, 0.0, true);
   pneuCylinRight.set(true);
-  Drivetrain.turnFor(-25, degrees, true);
+  Drivetrain.turnFor(-25.5, degrees, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  wait(0.3, seconds);
-  //Drivetrain.turnFor(5, degrees, true);
+  wait(0, seconds);
+  Drivetrain.turnFor(5, degrees, true);
 
   ForwardPID(10, 1, 0.0, 0.0, true);
      pneuCylinRight.set(false);
@@ -402,21 +403,21 @@ void autonomous(void) {
 
   //ForwardPID(10, 0.6, 0.0, 0.0, true);
 
-  Drivetrain.turnFor(-6, degrees, true);
+  //Drivetrain.turnFor(-6, degrees, true);
 
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   ReversePID(6, 0.5, 0.0, 0.0, true);
-  wait(0.5, seconds);
+  wait(0.3, seconds);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  ForwardPID(20, 1, 0.0, 0.0, true);
+  ForwardPID(16, 1, 0.0, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   ReversePID(6, 0.5, 0.0, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  ForwardPID(20, 1, 0.0, 0.0, true);
+  ForwardPID(12, 2, 0.0, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   ReversePID(6, 0.5, 0.0, 0.0, true);
@@ -427,21 +428,50 @@ void autonomous(void) {
   RightDriveSmart.resetPosition();
   ForwardPID(4, 0.7, 0.0, 0.0, true);
   intake.spin(forward);
-  wait(0.8, seconds);
+  wait(0.4, seconds);
   RotatingPID(245, 0.3, 0.0, 0.0);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   ReversePID(6, 1, 0.0, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
-  wait(0.5, seconds);
+  wait(0.1, seconds);
   ForwardPID(14, 2, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  DrivetrainInertial.resetHeading();
   intake.stop();
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  ReversePID(6, 1, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  wait(0.1, seconds);
+  ForwardPID(14, 2, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+   ReversePID(10, 0.6, 0.0, 0.0, true);
 
 
 
 
-
+  /*
+  ReversePID(8, 0.7, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  RotatingPID(450, 0.3, 0.0, 0.0);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  DrivetrainInertial.resetHeading();
+  ForwardPID(16, 1, 0.0, 0.0, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  RotatingPID(525, 0.7, 0.0, 0.0);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  DrivetrainInertial.resetHeading();
+  ForwardPID(24, 1, 0.0, 0.0, true);
+  */
 
 }
 
