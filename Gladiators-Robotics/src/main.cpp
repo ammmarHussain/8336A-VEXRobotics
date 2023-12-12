@@ -28,7 +28,13 @@ void resetMotorValues() {
   leftFrontMotor.setPosition(0, degrees);
   rightBackMotor.setPosition(0, degrees);
   rightFrontMotor.setPosition(0, degrees); 
-  DrivetrainInertial.setHeading(0, degrees);
+
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+
+  DrivetrainInertial.resetRotation();
+  DrivetrainInertial.resetHeading();
+
 }
 
 // https://www.desmos.com/calculator/sdcgzah5ya
@@ -172,165 +178,162 @@ void intakeControl( ){
 
 
 int ForwardPID (double targetValue, double P, double I, double D, bool fwrd){
-double totalError = 0;
-double lastError = Test1.getRbtYPos();
-while(1){
-double currValue = Test1.getRbtYPos();
-double currError = targetValue - currValue;
-totalError += currError;
-double diffError = currError - lastError;
+  double totalError = 0;
+  double lastError = Test1.getRbtYPos();
+  while(1){
+    double currValue = Test1.getRbtYPos();
+    double currError = targetValue - currValue;
+    totalError += currError;
+    double diffError = currError - lastError;
 
-double currVolt = currError*P + totalError*I + diffError*D;
-if(fwrd){
-LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
-RightDriveSmart.spin(forward, currVolt, voltageUnits::volt); 
-}
-else{
-LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
-RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
-}
-lastError = currError;
-printf( " Forward Current Error %f\n", currError );
-vex::task::sleep(20);
+    double currVolt = currError*P + totalError*I + diffError*D;
+    if(fwrd){
+      LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+      RightDriveSmart.spin(forward, currVolt, voltageUnits::volt); 
+    }
+    else{
+      LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+      RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+    }
 
-if(currError < 3){
-LeftDriveSmart.stop(brake);
-RightDriveSmart.stop(brake);
-break;
-}
-}
-return 1;
+    lastError = currError;
+    printf( " Forward Current Error %f\n", currError );
+    vex::task::sleep(20);
+
+    if(currError < 1){
+      LeftDriveSmart.stop(brake);
+      RightDriveSmart.stop(brake);
+      break;
+    }
+  }
+  return 1;
 }
 
 
 int ReversePID (double targetValue, double P, double I, double D, bool fwrd){
-double totalError = 0;
-double lastError = Test1.getRevYPos();
-while(1){
-double currValue = Test1.getRevYPos();
-double currError = targetValue - currValue;
-totalError += currError;
-double diffError = currError - lastError;
+  double totalError = 0;
+  double lastError = Test1.getRevYPos();
+  while(1){
+    double currValue = Test1.getRevYPos();
+    double currError = targetValue - currValue;
+    totalError += currError;
+    double diffError = currError - lastError;
 
-double currVolt = currError*P + totalError*I + diffError*D;
-if(fwrd){
-LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
-RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
-}
-else{
-LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
-RightDriveSmart.spin(forward, currVolt, voltageUnits::volt);
-}
-lastError = currError;
-printf( " Reverse Current Error %f\n", currError );
+    double currVolt = currError*P + totalError*I + diffError*D;
+    if(fwrd){
+      LeftDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+      RightDriveSmart.spin(reverse, currVolt, voltageUnits::volt);
+    }
+    else{
+      LeftDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+      RightDriveSmart.spin(forward, currVolt, voltageUnits::volt);
+    }
 
-vex::task::sleep(20);
+    lastError = currError;
+    printf( " Reverse Current Error %f\n", currError );
+    vex::task::sleep(20);
 
-if(currError < 3.5){
-LeftDriveSmart.stop(brake);
-RightDriveSmart.stop(brake);
-printf("DONE!");
-break;
-}
-}
-return 1;
+    if(currError < 1){
+      LeftDriveSmart.stop(brake);
+      RightDriveSmart.stop(brake);
+      printf("DONE!");
+      break;
+    }
+  }
+  return 1;
 }
 
 
 int rightRotatingPID (double turnTargetValue, double tP, double tI, double tD){
-double turnTotalError = 0;
-double turnLastError = Test1.toDegrees( Test1.getPosition().h );
-//printf( " Current Value %f\n", lastError );
-while(1){
-double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
-double turnCurrError = turnTargetValue - turnCurrValue;
-turnTotalError += turnCurrError;
-double turnDiffError = turnCurrError - turnLastError;
+  double turnTotalError = 0;
+  double turnLastError = Test1.toDegrees( Test1.getPosition().h );
+  //printf( " Current Value %f\n", lastError );
+  while(1){
+    double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
+    double turnCurrError = turnTargetValue - turnCurrValue;
+    turnTotalError += turnCurrError;
+    double turnDiffError = turnCurrError - turnLastError;
+    double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+    LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
+    RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
 
+    turnLastError = turnCurrError;
 
-double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+    vex::task::sleep(20);
+    //Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+    //printf( " PID volt %f\n", currVolt );
+    printf( " Turn Current Error %f\n", turnCurrError );
 
-LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
-RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
-
-turnLastError = turnCurrError;
-
-vex::task::sleep(20);
-//Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
-//printf( " PID volt %f\n", currVolt );
-printf( " Turn Current Error %f\n", turnCurrError );
-
-if(turnCurrError < 2){
-LeftDriveSmart.stop(brake);
-RightDriveSmart.stop(brake);
-
-break;
-}
-}
-return 1;
+    if(turnCurrError < 2){
+      LeftDriveSmart.stop(brake);
+      RightDriveSmart.stop(brake);
+      break;
+    }
+  }
+  return 1;
 }
 
 int leftRotatingPID (double turnTargetValue, double tP, double tI, double tD){
-double turnTotalError = 0;
-double turnLastError = Test1.toDegrees( Test1.getPosition().h );
-//printf( " Current Value %f\n", lastError );
-while(1){
-double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
-double turnCurrError = turnTargetValue - turnCurrValue;
-turnTotalError += turnCurrError;
-double turnDiffError = turnCurrError - turnLastError;
+  double turnTotalError = 0;
+  double turnLastError = Test1.toDegrees( Test1.getPosition().h );
+  //printf( " Current Value %f\n", lastError );
+  while(1){
+    double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
+    double turnCurrError = turnTargetValue + turnCurrValue;
+    turnTotalError -= turnCurrError;
+    double turnDiffError = turnCurrError - turnLastError;
 
-double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+    double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
 
-LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
-RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+    LeftDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+    RightDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
 
-turnLastError = turnCurrError;
+    turnLastError = turnCurrError;
+    vex::task::sleep(20);
 
-vex::task::sleep(20);
-//Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
-//printf( " PID volt %f\n", currVolt );
-printf( " Turn Current Error %f\n", turnCurrError );
+    //Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+    //printf( " PID volt %f\n", currVolt );
+    printf( " Turn Current Error %f\n", turnCurrError );
 
-if(turnCurrError < 2){
-LeftDriveSmart.stop(brake);
-RightDriveSmart.stop(brake);
-
-break;
+    if(turnCurrError < 2){
+      LeftDriveSmart.stop(brake);
+      RightDriveSmart.stop(brake);
+      break;
+    }
+  }
+  return 1;
 }
-}
-return 1;
-}
+
 int RotatingPID (double turnTargetValue, double tP, double tI, double tD){
-double turnTotalError = 0;
-double turnLastError = Test1.toDegrees( Test1.getPosition().h );
-//printf( " Current Value %f\n", lastError );
-while(1){
-double turnCurrValue = Test1.toDegrees( Test1.getPosition().h );
-double turnCurrError = turnTargetValue - turnCurrValue;
-turnTotalError += turnCurrError;
-double turnDiffError = turnCurrError - turnLastError;
+  double turnTotalError = 0;
+  double turnLastError = Test1.toDegrees(Test1.getPosition().h);
+  //printf( " Current Value %f\n", lastError );
+  while(1){
+    double turnCurrValue = Test1.toDegrees(Test1.getPosition().h);
+    double turnCurrError = turnTargetValue - turnCurrValue;
+    turnTotalError += turnCurrError;
+    double turnDiffError = turnCurrError - turnLastError;
 
-double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
+    double turnCurrVolt = turnCurrError*tP + turnTotalError*tI + turnDiffError*tD;
 
-LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
-RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
+    LeftDriveSmart.spin(forward, turnCurrVolt, voltageUnits::volt);
+    RightDriveSmart.spin(reverse, turnCurrVolt, voltageUnits::volt);
 
-turnLastError = turnCurrError;
+    turnLastError = turnCurrError;
 
-vex::task::sleep(20);
-Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
-//printf( " PID volt %f\n", currVolt );
-printf( " Turn Current Error %f\n", turnCurrError );
+    vex::task::sleep(20);
+    Brain.Screen.printAt(1, 20, "PID volt", turnCurrVolt);
+    //printf( " PID volt %f\n", currVolt );
+    printf( " Turn Current Error %f\n", turnCurrError );
 
-if((turnCurrError) < 1){
-LeftDriveSmart.stop(brake);
-RightDriveSmart.stop(brake);
-printf("DONE!");
-break;
-}
-}
-return 1;
+    if((turnCurrError) < 1){
+      LeftDriveSmart.stop(brake);
+      RightDriveSmart.stop(brake);
+      printf("DONE!");
+      break;
+    }
+  }
+  return 1;
 }
 
 // pre-autonomous code; other words for robot before-start settings!
@@ -373,14 +376,38 @@ void autonomous(void) {
       Test1.updateRobotPosition(); 
       }
     });
+
  
   intake.spin(reverse);
-  ReversePID(10, 0.7, 0.000, 0.3, true);
- 
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-  wait(0.5, seconds);
-   intake.stop();
+  ReversePID(5, 0.7, 0.000, 0.0, true);
+  wait(0.2, seconds);
+  intake.stop();
+  resetMotorValues();
+  ForwardPID(24, 0.5, 0.0, 0.0, true);
+  leftRotatingPID(28, 0.28, 0.0, 0.0);
+  resetMotorValues();
+
+  // Moving along match load bar
+  ForwardPID(9, 0.7, 0.0, 0.0, true);
+  resetMotorValues();
+  pneuCylinRight.set(true);
+  leftRotatingPID(35, 0.24, 0.0, 0.0);
+  resetMotorValues();
+  pneuCylinRight.set(false);
+
+  RotatingPID(5, 0.28, 0.0, 0.0);  
+  resetMotorValues();
+  ForwardPID(15, 1.5, 0.0, 0.0, true);
+
+
+  /*ForwardPID(24, 0.5, 0.0, 0.0, true);
+resetMotorValues();
+  RotatingPID(120+180, 0.06, 0.0, 0.0);
+  resetMotorValues();
+  intake.spin(forward);
+  RotatingPID(225, 0.065, 0.0, 0.0); */
+ /*
+ //  intake.stop();
   ForwardPID(30, 0.4, 0.000, 0.0, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
@@ -452,7 +479,7 @@ void autonomous(void) {
   RightDriveSmart.resetPosition();
    ReversePID(10, 0.6, 0.0, 0.0, true);
 
-
+*/
 
 
   /*
