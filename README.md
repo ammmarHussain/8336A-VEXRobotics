@@ -1,7 +1,8 @@
 # Team 8336A - Gladiator Robotics
 
 
-![HGHS Robotics GitHub Banner Ver0 2](https://github.com/mochi48/8336A-VEXRobotics/assets/105319861/4d093ea8-0aca-4b05-b894-cc75d6a74ce1)
+
+![HGHS_Robotics_Logo-Ver0 7 - Blue - Banner](https://github.com/ammmarHussain/8336A-VEXRobotics/assets/105319861/fa700823-b9cd-490e-a15f-39f49922ad16)
 
 
 
