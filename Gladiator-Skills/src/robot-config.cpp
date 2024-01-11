@@ -21,9 +21,9 @@ motor catapultMotor = motor(PORT9, ratio36_1, false);
 motor cataSecondMotor = motor(PORT13, ratio36_1, true);
 motor intake = motor (PORT18, ratio36_1, true);
 
-motor lHang = motor(PORT1, ratio18_1, true);
-// motor rHang = motor()
+
 motor_group catapult = motor_group(catapultMotor, cataSecondMotor);
+
 
 // misc definitions
 

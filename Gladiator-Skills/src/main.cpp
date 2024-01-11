@@ -388,86 +388,46 @@ void autonomous(void) {
       }
     });
 
-  // pick up triball
-  printf("BEGIN reverse and pick up triball \n");
-  intake.spin(reverse, 12, voltageUnits::volt);
-  ReversePID(5, 0.9, 0.000, 0.4, true);
- //  wait(0.3, seconds);
-  intake.stop();
+  // wait(3, seconds);
+  RotatingPID(0, 0.4, 0.0, 0.3);
+  //   ReversePID(1, 0.2, 0.0, 0.1, true);
+  ForwardPID(15, 2, 0, 2, true);
   resetMotorValues();
 
-  // drive to bar
-  printf("drive forward to match load bar\n");
-  ForwardPID(24, 1, 0.0, 0.4, true);
-
-
-  // turn parallel to the match load bar
-  printf("turn left parallel to the match load bar\n");
-  leftRotatingPID(28, 0.25, 0.0, 0.0);
+  leftRotatingPID(30, 0.3, 0.0, 0.0);
   resetMotorValues();
-  
+ // LeftDriveSmart.resetPosition();
+ // RightDriveSmart.resetPosition();
 
-  // drive along match load bar
-  printf("drive with match load bar\n");
-  ForwardPID(6.5, 2, 0.0, 2, true);
+  ForwardPID(26, 0.8, 0, 0.6, true);
+  resetMotorValues();
+
+  RotatingPID(78, 0.2, 0, 0.0);
+  resetMotorValues();
+ // LeftDriveSmart.resetPosition();
+  // RightDriveSmart.resetPosition();
+
+  ForwardPID(80, 1, 1.5, 2, true);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+  wait(1, seconds);
+
+  RotatingPID(0, 0.9, 0.0, 0.9);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
 
-  // activate right wing to knock out triball from match load
+  pneuCylinLeft.set(true); 
   pneuCylinRight.set(true);
-  pneuCylinLeft.set(true);
-   
-  // drive further along match load to push out triball
-  printf("continue along match load bar\n");
-  ForwardPID(4, 1, 0.0, 1, true);
-  resetMotorValues(); 
-
- // overshoot turning left - swings corner triball outwards
-  printf("turn left to swing triball out\n");
-  leftRotatingPID(58, 0.5, 0.0, 0.7);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-  resetMotorValues();
   
-  printf("correct overturn - aim towards goal");
-  RotatingPID(18,0.4, 0.0, 0.7);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-  
-
-  pneuCylinRight.set(false);
-  pneuCylinLeft.set(false);
-  wait(0.1, seconds);
-  ForwardPID(24, 2, 0.0, 1, true);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-
-  RotatingPID(0, 0.4, 0.0, 0.0);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-
-  ReversePID(6.5, 1, 0, 0.9, true);
-  resetMotorValues();
-
-  leftRotatingPID(38, 0.7, 0.0, 0.85);
-  resetMotorValues(); 
-   
-  ForwardPID(25, 0.8, 0.0, 0.4, true);  
-  resetMotorValues();
-
-  leftRotatingPID(35, 0.7, 0.0, 0.3);
-  resetMotorValues();
-  
-  intake.spin(forward);
-  wait(0.4, seconds);
+  ForwardPID(20, 1, 0, 1, true);
 
 // first attempt - 95 - too little
 // second attempt - 120 - too much
 // third attempt - 115 - too much? - PID values wrong -> 0.7, 0.0, 0.3 - error -> -1.83
 // fourth attempt - 110 -> 0.4, 0.0, 0.3, error -> -2.9
 // fifth attempt - 110 -> 0.4, 0.0, 0.1, error ->
-  leftRotatingPID(110, 0.4, 0.0, 0.1);
-  intake.spin(reverse);
+  //leftRotatingPID(110, 0.4, 0.0, 0.1);
+   //intake.spin(reverse);
 
 
 
