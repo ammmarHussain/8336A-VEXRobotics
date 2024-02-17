@@ -362,7 +362,7 @@ void pre_auton(void) {
   pneuCylinRight.set(false);
 
   // draw logo on screen
-  Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
+  Brain.Screen.drawImageFromFile("Robotics Logo Blue.png", 0, 0);
 }
 
 
@@ -386,52 +386,27 @@ void autonomous(void) {
     while(1){
       Test1.updateRobotPosition(); 
       }
-    });
+    }); 
 
-  // wait(3, seconds);
-  RotatingPID(0, 0.4, 0.0, 0.3);
-  //   ReversePID(1, 0.2, 0.0, 0.1, true);
-  ForwardPID(15, 2, 0, 2, true);
-  resetMotorValues();
+  // printf("fire catapult for 30 sec");
+  // catapult.spin(forward);
+  // 
 
-  leftRotatingPID(30, 0.3, 0.0, 0.0);
-  resetMotorValues();
- // LeftDriveSmart.resetPosition();
- // RightDriveSmart.resetPosition();
 
-  ForwardPID(26, 0.8, 0, 0.6, true);
-  resetMotorValues();
-
-  RotatingPID(78, 0.2, 0, 0.0);
-  resetMotorValues();
- // LeftDriveSmart.resetPosition();
-  // RightDriveSmart.resetPosition();
-
-  ForwardPID(80, 1, 1.5, 2, true);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-  wait(1, seconds);
-
-  RotatingPID(0, 0.9, 0.0, 0.9);
+  ForwardPID(10, 0.8, 0.0, 0.7, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
 
-  pneuCylinLeft.set(true); 
-  pneuCylinRight.set(true);
+  leftRotatingPID(35, 0.2, 0.0, 0.05);
+  LeftDriveSmart.resetPosition();
+  RightDriveSmart.resetPosition();
+
+  ReversePID(14, 0.6, 0, 0.7, true);
   
-  ForwardPID(20, 1, 0, 1, true);
-
-// first attempt - 95 - too little
-// second attempt - 120 - too much
-// third attempt - 115 - too much? - PID values wrong -> 0.7, 0.0, 0.3 - error -> -1.83
-// fourth attempt - 110 -> 0.4, 0.0, 0.3, error -> -2.9
-// fifth attempt - 110 -> 0.4, 0.0, 0.1, error ->
-  //leftRotatingPID(110, 0.4, 0.0, 0.1);
-   //intake.spin(reverse);
 
 
 
-/* 
+  /*
 
   printf("score triballs \n");
   ForwardPID(12.5, 1, 0.0, 0.6, true);

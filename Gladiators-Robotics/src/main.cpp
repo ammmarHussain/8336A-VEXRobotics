@@ -86,8 +86,9 @@ void pneumaticsControlCallback() {
 
   // initial state of pneumatics
   bool pneumaticsActive = true;
+  bool hangActive = false;
   while (true) {
-
+/*
     // toggles pneumaticsActive variable and opens pneumatics
     if (Controller1.ButtonR1.pressing() && pneumaticsActive) {
       pneumaticsActive = false;
@@ -103,11 +104,30 @@ void pneumaticsControlCallback() {
       pneuCylinRight.set(false);      
       this_thread::sleep_for(200);
     }
+    */
+
+    if (Controller1.ButtonA.pressing() && hangActive) {
+      hangActive = false;
+      lHang.set(true);
+      rHang.set(true);
+      this_thread::sleep_for(200);
+    }
+
+    // toggles pneumaticsActive variable and closes pneumatics
+    else if (Controller1.ButtonA.pressing()) {
+      hangActive = true;
+      lHang.set(false);
+      rHang.set(false);      
+      this_thread::sleep_for(200);
+    }
+
+
 
     // prevent robot from throttling
     this_thread::sleep_for(20);
   }
 }
+
 
 // WIP FUNCTION - SEMI FUNCTIONAL!
 void toggleCatapult() {
@@ -662,11 +682,12 @@ void usercontrol(void) {
 
   // Sets up the multithreading in a while loop that runs forever.
   thread toggleCylinders = thread(pneumaticsControlCallback);
+  // thread toggleHang = thread(hangControlCallback);
   thread toggleCatapultThread = thread(toggleCatapult);
   thread joystickCurve = thread(joystickThreadCallback);
   thread toggleIntake = thread(intakeControl);
     
-
+  
   // ensure program stays in user control
   while(true) {
     wait(20, msec);

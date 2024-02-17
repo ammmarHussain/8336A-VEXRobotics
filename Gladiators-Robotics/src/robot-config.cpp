@@ -12,24 +12,27 @@ controller Controller1 = controller(primary);
 
 // create motors
 motor leftFrontMotor = motor(PORT3, ratio18_1, true);
-motor leftBackMotor = motor(PORT12, ratio18_1, true);
+motor leftBackMotor = motor(PORT8, ratio18_1, true);
 motor rightBackMotor = motor(PORT16, ratio18_1, false);
 motor rightFrontMotor = motor(PORT17, ratio18_1, false);
 
 
 motor catapultMotor = motor(PORT9, ratio36_1, false);
-motor cataSecondMotor = motor(PORT13, ratio36_1, true);
+motor cataLeftMotor = motor(PORT13, ratio36_1, true);
 motor intake = motor (PORT18, ratio36_1, true);
 
-motor lHang = motor(PORT1, ratio18_1, true);
-// motor rHang = motor()
-motor_group catapult = motor_group(catapultMotor, cataSecondMotor);
+
+
+motor_group catapult = motor_group(catapultMotor, cataLeftMotor);
 
 // misc definitions
 
 inertial DrivetrainInertial = inertial(PORT19);
 digital_out pneuCylinLeft = digital_out(Brain.ThreeWirePort.A);
 digital_out pneuCylinRight = digital_out(Brain.ThreeWirePort.B);
+
+digital_out lHang = digital_out(Brain.ThreeWirePort.C);
+digital_out rHang = digital_out(Brain.ThreeWirePort.D);
 
 // define drivetrain
 

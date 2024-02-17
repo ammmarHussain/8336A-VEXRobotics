@@ -55,6 +55,10 @@ extern motor intake;
 extern motor_group catapult;
 extern digital_out pneuCylinLeft;
 extern digital_out pneuCylinRight;
+extern digital_out rHang;
+extern digital_out lHang;
+
+
 
 
 /**
