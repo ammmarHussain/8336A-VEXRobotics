@@ -1,8 +1,8 @@
 # Team 8336A - Gladiator Robotics
 
 
+![Gladiator Robotics - Vaporwave Logo](https://github.com/ammmarHussain/8336A-VEXRobotics/assets/105319861/4da99adb-323a-47c9-97f8-eb398c682dfa)
 
-![HGHS_Robotics_Logo-Ver0 7 - Blue - Banner](https://github.com/ammmarHussain/8336A-VEXRobotics/assets/105319861/fa700823-b9cd-490e-a15f-39f49922ad16)
 
 
 
