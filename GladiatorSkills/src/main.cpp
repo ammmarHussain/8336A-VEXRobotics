@@ -362,7 +362,7 @@ void pre_auton(void) {
   pneuCylinRight.set(false);
 
   // draw logo on screen
-  Brain.Screen.drawImageFromFile("Robotics Logo Blue.png", 0, 0);
+  Brain.Screen.drawImageFromFile("Robotics Logo - Resized for VEX V5.png", 0, 0);
 }
 
 
@@ -389,9 +389,54 @@ void autonomous(void) {
     }); 
 
  // Reverse to Center of Field
- printf("Reversing to center \n");
- ReversePID(double targetValue, double P, double I, double D, bool fwrd)
+ catapult.spin(forward, 11, voltageUnits::volt);
+ wait(10, sec);
+ catapult.stop();
+ wait(0.65, seconds);
 
+ catapult.spin(forward, 11, voltageUnits::volt);
+ wait(10, sec);
+ catapult.stop();
+ wait(0.65, seconds);
+
+ catapult.spin(forward, 11, voltageUnits::volt);
+ wait(10, sec);
+ catapult.stop();
+ wait(0.65, seconds);
+
+ catapult.spin(forward, 11, voltageUnits::volt);
+ wait(10, sec);
+ catapult.stop();
+ 
+ ForwardPID(4, 0.7, 0, 0.4, true);
+ LeftDriveSmart.resetPosition();
+ RightDriveSmart.resetPosition();
+ RotatingPID(19, 0.7, 0, 0.2);
+
+ ForwardPID(75, 0.6, 0, 0, true);;
+ 
+
+ leftRotatingPID(60, 0.4, 0, 0);
+ LeftDriveSmart.resetPosition();
+ RightDriveSmart.resetPosition();
+  
+ ForwardPID(65, 0.5, 0.0, 0.0, true);
+ LeftDriveSmart.resetPosition();
+ RightDriveSmart.resetPosition();
+
+ RotatingPID(8, 0.7, 0, 0.2);
+ pneuCylinLeft.set(true);
+ pneuCylinRight.set(true);
+ LeftDriveSmart.resetPosition();
+ RightDriveSmart.resetPosition();
+
+ ForwardPID(12, 2, 0, 2, true);
+ LeftDriveSmart.resetPosition();
+ RightDriveSmart.resetPosition();
+ 
+ ReversePID(8, 1, 0, 0.8, true);
+
+ 
 }
 
 

@@ -17,8 +17,8 @@ motor rightBackMotor = motor(PORT16, ratio18_1, false);
 motor rightFrontMotor = motor(PORT17, ratio18_1, false);
 
 
-motor catapultMotor = motor(PORT14, ratio36_1, false);
-motor cataSecondMotor = motor(PORT13, ratio36_1, true);
+motor catapultMotor = motor(PORT13, ratio36_1, false);
+motor cataSecondMotor = motor(PORT14, ratio36_1, true);
 motor intake = motor (PORT18, ratio36_1, true);
 
 

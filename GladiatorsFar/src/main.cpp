@@ -135,7 +135,7 @@ void toggleCatapult() {
   bool cataMotorSpin = false;
   while (true) {
     if (cataMotorSpin) {
-      catapult.spin(fwd, 11, voltageUnits::volt);
+      catapult.spin(fwd, 12, voltageUnits::volt);
     } 
     else {
       catapult.stop();
@@ -145,7 +145,7 @@ void toggleCatapult() {
     if (Controller1.ButtonR2.pressing()) {
       cataMotorSpin = !cataMotorSpin;
       if (cataMotorSpin) {
-        catapult.spin(fwd, 11, voltageUnits::volt);
+        catapult.spin(fwd, 12, voltageUnits::volt);
       } 
       else {
         catapult.stop();

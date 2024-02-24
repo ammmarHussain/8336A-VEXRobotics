@@ -9,6 +9,7 @@
 // defines PI as the definition of atan(1) *4
 #define PI atan(1)*4
 #define WHEEL_DIAMETER 4.125
+#define GEAR_RATIO 1.67
 
 // used for odometry pods - but our drivetrain does not utilize them, so they are commented out
 // #define PPR500 9/50
@@ -148,13 +149,21 @@ double odometry::wrapAngle(double degrees) {
   return degrees;
 }
 //For the forward axis
+ /*
 const double odometry::getRbtYPos() {
   return ((PI*WHEEL_DIAMETER) * 1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
 }
-
-
 const double odometry::getRevYPos() {
   return ((PI*WHEEL_DIAMETER) * -1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
+}
+*/
+
+const double odometry::getRbtYPos() {
+  return ((PI*WHEEL_DIAMETER*GEAR_RATIO) * 1.0 *((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
+}
+
+const double odometry::getRevYPos() {
+  return ((PI*WHEEL_DIAMETER*GEAR_RATIO) * -1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
 }
 
 
