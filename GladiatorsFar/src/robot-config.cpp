@@ -21,7 +21,7 @@ motor cataLeftMotor = motor(PORT14, ratio36_1, true);
 motor_group catapult = motor_group(catapultMotor, cataLeftMotor);
 
 motor intake = motor (PORT10, ratio36_1, true);
-inertial DrivetrainInertial = inertial(PORT20);
+inertial DrivetrainInertial = inertial(PORT18);
 
 // misc definitions
 

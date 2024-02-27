@@ -149,12 +149,12 @@ double odometry::wrapAngle(double degrees) {
 }
 //For the forward axis
 const double odometry::getRbtYPos() {
-  return ((PI*WHEEL_DIAMETER) * 1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
+  return ((PI*WHEEL_DIAMETER*1.67) * 1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
 }
 
 
 const double odometry::getRevYPos() {
-  return ((PI*WHEEL_DIAMETER) * -1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
+  return ((PI*WHEEL_DIAMETER*1.67) * -1.0 * ((leftFrontMotor.position(rev) + rightFrontMotor.position(rev))/2.0));
 }
 
 
