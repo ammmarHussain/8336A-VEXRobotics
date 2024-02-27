@@ -469,7 +469,7 @@ void autonomous(void) {
   RightDriveSmart.resetPosition();  
 
   resetMotorValues();
-  leftRotatingPID(26.5, 0.6, 0.0, 0.2); 
+  leftRotatingPID(23, 0.6, 0.0, 0.2); 
   resetMotorValues();
   //LeftDriveSmart.resetPosition();
   //RightDriveSmart.resetPosition();
@@ -501,22 +501,31 @@ void autonomous(void) {
   leftRotatingPID(80, 0.25, 0.0, 0.85);
   resetMotorValues(); 
 
-  ForwardPID(25, 0.8, 0.0, 0.4, true);  
+  printf("out take first triball");
+  ForwardPID(30, 0.8, 0.0, 0.4, true);  
   resetMotorValues();
 
- leftRotatingPID(18, 0.7, 0.0, 0.3);
+ leftRotatingPID(20, 0.7, 0.0, 0.3);
   resetMotorValues();
   intake.spin(forward);
   wait(0.5, seconds);
   intake.stop();
 
-  RotatingPID(10, 0.3, 0, 0.3);
+  printf("go towards second triball");
+  leftRotatingPID(80, 0.7, 0.0, 0.3);
   resetMotorValues();
-  // pneuCylinLeft.set(true);
 
-  ForwardPID(25, 0.7, 0, 0.9, true);
+  ReversePID(20, 0.8, 0.0, 0.4, true);  
   resetMotorValues();
-  pneuCylinRight.set(true);
+  intake.spin(reverse);
+  wait(0.5, seconds);
+  intake.stop();
+
+  rightRotatingPID(75, 0.8, 0, true);
+  resetMotorValues();
+  intake.spin(forward);
+  wait(0.5, seconds);
+  intake.stop();
 
   /*
 
