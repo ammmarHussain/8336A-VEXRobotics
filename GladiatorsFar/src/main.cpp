@@ -421,7 +421,7 @@ void autonomous(void) {
 
   // drive to bar
   printf("drive forward to match load bar\n");
-  ForwardPID(24, 1, 0.0, 0.4, true);
+  ForwardPID(25, 1, 0.0, 0.4, true);
   resetMotorValues();
   intake.stop();
 
@@ -433,8 +433,7 @@ void autonomous(void) {
   // drive along match load bar
   printf("drive with match load bar\n");
   ForwardPID(14, 2, 0.0, 2, true);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
+  resetMotorValues();
 
   // activate right wing to knock out triball from match load
   pneuCylinRight.set(true);
@@ -452,35 +451,32 @@ void autonomous(void) {
   //LeftDriveSmart.resetPosition();
   //RightDriveSmart.resetPosition();
   resetMotorValues();
-  wait(0.1, sec);
+ // wait(0.1, sec);
  
 
   printf("correct overturn - aim towards goal");
   RotatingPID(30, 0.5, 0.0, 0.8);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
+  resetMotorValues();
    
   pneuCylinRight.set(false);
   pneuCylinLeft.set(false);
   //wait(0.1, seconds);
   
-  ForwardPID(12, 0.6, 0, 0.4, true);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();  
-
+  ForwardPID(12, 0.6, 0, 0.4, true); 
   resetMotorValues();
-  leftRotatingPID(23, 0.6, 0.0, 0.2); 
+
+  leftRotatingPID(24, 0.6, 0.0, 0.5); 
   resetMotorValues();
   //LeftDriveSmart.resetPosition();
   //RightDriveSmart.resetPosition();
   
- 
+ /*
  ReversePID(1.5, 0.6, 0, 0.2, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
   resetMotorValues();
-
-  ForwardPID(30, 5, 0.01, 5, true);
+*/
+  ForwardPID(25, 5, 0.1, 5, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
 
@@ -488,15 +484,14 @@ void autonomous(void) {
 
 
 
-  ReversePID(5, 0.8, 0, 0.1, true);
+  ReversePID(6, 0.8, 0, 0.1, true);
   LeftDriveSmart.resetPosition();
   RightDriveSmart.resetPosition();
 
-  /*
-  RotatingPID(4, 0.8, 0.0, 0.0);
-  LeftDriveSmart.resetPosition();
-  RightDriveSmart.resetPosition();
-  */
+  
+  leftRotatingPID(3, 0.8, 0.0, 0.0);
+  resetMotorValues();
+
 
   leftRotatingPID(80, 0.25, 0.0, 0.85);
   resetMotorValues(); 
@@ -508,38 +503,38 @@ void autonomous(void) {
  leftRotatingPID(20, 0.7, 0.0, 0.3);
   resetMotorValues();
   intake.spin(forward);
-  wait(0.2, seconds);
-  intake.stop();
+  wait(0.3, seconds);
+  //intake.stop();
 
   printf("go towards second triball");
-  leftRotatingPID(90, 0.7, 0.0, 0.3);
+  leftRotatingPID(98, 0.7, 0.0, 0.3);
   resetMotorValues();
 
-  ReversePID(20, 0.8, 0.0, 0.4, true);  
-  resetMotorValues();
   intake.spin(reverse);
-  wait(0.2, seconds);
-  intake.stop();
+  ReversePID(10, 0.6, 0.0, 0.6, true);      
+  resetMotorValues();
 
   RotatingPID(95, 0.8, 0, 0);
   resetMotorValues();
   intake.spin(forward);
-  wait(0.2, seconds);
+  wait(0.4, seconds);
   intake.stop();
   
   // reverse into center triball to intake
+  leftRotatingPID(20, 0.3, 0, 0.3);
   intake.spin(reverse);
-  leftRotatingPID(10, 0.3, 0, 0.3);
   resetMotorValues();
-  ReversePID(15, 0.4, 0.0, 0.3, true);
+  ReversePID(15, 0.6, 0.0, 0.5, true);
   resetMotorValues();
 
   // turn such that intake faces goal, outtake triball
-  RotatingPID(25, 0.5, 0, 0.8);
+  RotatingPID(45, 0.5, 0, 0.8);
   intake.spin(forward);
+  wait(0.3, seconds);
+  intake.stop();
 
   // turn around
-  RotatingPID(210, 0.3, 0, 0);
+  RotatingPID(255, 0.1, 0, 0.1);
   resetMotorValues();
 
   // score triballs into front of goal
