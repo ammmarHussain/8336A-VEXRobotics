@@ -507,7 +507,7 @@ void autonomous(void) {
   //intake.stop();
 
   printf("go towards second triball");
-  leftRotatingPID(93, 0.7, 0.0, 0.3);
+  leftRotatingPID(87, 0.7, 0.0, 0.3);
   resetMotorValues();
 
   intake.spin(reverse);
@@ -534,7 +534,7 @@ void autonomous(void) {
   intake.stop();
 
   // turn around
-  RotatingPID(255, 0.1, 0, 0.4);
+  RotatingPID(255, 0.25, 0, 0.4);
   resetMotorValues();
 
   // score triballs into front of goal

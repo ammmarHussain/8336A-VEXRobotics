@@ -410,36 +410,102 @@ void autonomous(void) {
       Test1.updateRobotPosition(); 
       }
     });
-
+    
+    // knock alliance triball towards side of goal
     pneuCylinLeft.set(true);
     wait(0.1, seconds);
     pneuCylinLeft.set(false);
     
+    // pick up triball along long black bar
     intake.spin(reverse);
-    ReversePID(55, 0.9, 0.1, 2, true);
+    ReversePID(60, 0.7, 0.0, 0.5, true);
     LeftDriveSmart.resetPosition();
     RightDriveSmart.resetPosition();
+    resetMotorValues();
+    wait(0.1, seconds);
+    ForwardPID(3, 0.9, 0.0, 0.4, true);
+    intake.stop();
 
-    leftRotatingPID(25, 0.2, 0, 0.4);
+    // score center triball
+    leftRotatingPID(42, 0.28, 0, 0.4);
     LeftDriveSmart.resetPosition();
     RightDriveSmart.resetPosition();
-    //pneuCylinRight.set(true);
     pneuCylinLeft.set(true);
-
-    ForwardPID(30, 1, 0.2, 0.5, true);
+    ForwardPID(30, 0.8, 0, 0.5, true);
     LeftDriveSmart.resetPosition();
     RightDriveSmart.resetPosition();
+
+    // outtake triball into goal
     pneuCylinLeft.set(false);
     pneuCylinRight.set(false);
     wait(0.2, seconds);
+    ReversePID(8, 0.5, 0, 1, true);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+    RotatingPID(125, 0.2, 0, 0.4);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+    intake.spin(forward);
 
-    ReversePID(10, 0.5, 0, 1, true);
+    // pick up off-center triball
+    leftRotatingPID(73, 0.2, 0, 0.4);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+    intake.spin(reverse);
+    ReversePID(17, 0.35, 0, 0.8, true);
     LeftDriveSmart.resetPosition();
     RightDriveSmart.resetPosition();
 
-    RotatingPID(133, 0.2, 0, 0.4);
+    // outtake triball to goal
+    leftRotatingPID(180, 0.25, 0, 0.4);
     LeftDriveSmart.resetPosition();
     RightDriveSmart.resetPosition();
+    intake.spin(forward);
+    wait(0.2, seconds);
+
+    // Score triballs 
+    RotatingPID(90, 0.4, 0, 0.1);
+    pneuCylinLeft.set(true);
+    ForwardPID(26, 0.5, 0, 0.7, true);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+    
+    // Move to Match Load triball
+    ReversePID(15, 0.4, 0.0, 0.4, true);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+    RotatingPID(75, 0.4, 0.0, 0.3);
+    resetMotorValues();
+    ForwardPID(50, 0.8, 0.0, 0.6, true);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+
+    // Descore Triball
+    leftRotatingPID(85, 0.3, 0, 0.3);
+    resetMotorValues();
+
+    pneuCylinRight.set(true);
+    ForwardPID(14, 0.3, 0, 0.4, true);
+    LeftDriveSmart.resetPosition();
+    RightDriveSmart.resetPosition();
+
+    leftRotatingPID(65, 0.8, 0.0, 0.4);
+
+
+
+
+
+
+
+
+
+/*
+    
+    
+
+
+
+   
 
     intake.spin(forward);
     ReversePID(8, 1, 0.2, 1, true);
@@ -487,7 +553,7 @@ void autonomous(void) {
     RightDriveSmart.resetPosition();
 
 
-
+*/
 }
 
 
